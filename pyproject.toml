@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=42.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "buildgen"
+version = "0.1.0"
+description = "Procedural 3D building generator"
+requires-python = ">=3.9"
+dependencies = [
+    "shapely>=2.0",
+    "trimesh>=4.0",
+    "networkx>=3.0",
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+    "Pillow>=10.0",
+    "matplotlib>=3.7",
+    "pyglet<2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+buildgen = "buildgen.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

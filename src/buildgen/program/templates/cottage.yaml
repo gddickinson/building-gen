@@ -1,0 +1,101 @@
+# English Cottage — Reference-Based Grid Template
+#
+# Small rural dwelling, typically 16th-19th century.
+# Simple rectangular plan, 1-2 rooms per floor.
+# Thick stone or cob walls, low ceilings, steep roof.
+#
+# Key features:
+#   - Central or end chimney with inglenook fireplace
+#   - Low doorways and ceilings (2.0-2.3m)
+#   - Small casement windows, irregularly placed
+#   - Front door opens directly into main room (no hallway)
+#   - Steep narrow staircase (often winder/spiral)
+#   - Thick walls (0.5-0.6m for stone/cob)
+#   - Flagstone or earth floors
+#   - Pantry or buttery off the main room
+#
+# Simplest form: one room down, one up.
+# Common form: two rooms down (hall + parlour), two up.
+#
+# Based on typical English cottage plans.
+
+layout_type: grid
+
+footprint:
+  width: 8.0        # metres (wider than deep for cottages)
+  width_var: 1.5
+  depth: 5.5        # metres (shallow plan, 1 room deep)
+  depth_var: 0.8
+  wall_thickness: 0.50    # Thick stone walls
+
+grid:
+  columns: 3
+  col_widths: [0.45, 0.10, 0.45]    # Two rooms with thin central wall/stair
+
+  floors:
+    # ── GROUND FLOOR ──
+    # Main living room (hall) with inglenook fireplace
+    # Parlour on the other side of the chimney
+    # No hallway — front door opens into the hall
+    - index: 0
+      rows: [0.75, 0.25]     # Main rooms front, small pantry/stair back
+      rooms:
+        - name: hall
+          type: parlour
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: parlour
+          type: dining_room
+          col: 2
+          row: 0
+          has_fireplace: true
+          optional: true
+          probability: 0.7
+
+        # Staircase in the centre
+        - name: staircase
+          type: stairwell
+          col: 1
+          row: 0
+          row_span: 2
+          is_stairwell: true
+
+        # Pantry / buttery at the back
+        - name: pantry
+          type: pantry
+          col: 0
+          row: 1
+          optional: true
+          probability: 0.6
+
+        - name: scullery
+          type: scullery
+          col: 2
+          row: 1
+          optional: true
+          probability: 0.5
+
+    # ── FIRST FLOOR ──
+    # 1-2 bedrooms tucked under the roof
+    - index: 1
+      rows: [1.0]
+      rooms:
+        - name: main_bedroom
+          type: master_bedroom
+          col: 0
+          row: 0
+
+        - name: stairwell_1
+          type: stairwell
+          col: 1
+          row: 0
+          is_stairwell: true
+
+        - name: second_bedroom
+          type: bedroom
+          col: 2
+          row: 0
+          optional: true
+          probability: 0.7

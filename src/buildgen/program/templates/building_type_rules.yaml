@@ -1,0 +1,2737 @@
+# =============================================================================
+# BUILDING TYPE ARCHITECTURAL DESIGN RULES
+# =============================================================================
+# Comprehensive design rules for historical and vernacular building types.
+# All dimensions in meters unless otherwise noted.
+# Each building type includes: rooms, adjacency, structure, features,
+# vertical relationships, and typical dimensions.
+# =============================================================================
+
+# =============================================================================
+# RELIGIOUS / CEREMONIAL
+# =============================================================================
+
+gothic_cathedral:
+  description: >
+    Large cruciform church with pointed arches, ribbed vaults, and flying
+    buttresses. Oriented east-west with altar at the east end.
+  period: "12th-16th century"
+  typical_footprint:
+    length: [70, 130]     # Chartres ~130m, smaller cathedrals ~70m
+    width: [25, 45]       # nave + aisles + chapels
+    crossing_width: [13, 17]
+  typical_heights:
+    nave_vault: [20, 40]  # Beauvais 48m (extreme), typical 25-35m
+    aisle_vault: [10, 18] # roughly half nave height
+    tower: [40, 80]
+    spire: [60, 160]      # Salisbury spire 123m
+  rooms:
+    nave:
+      description: "Central vessel for congregation, oriented east-west"
+      width: [10, 17]       # Chartres nave 16.4m wide
+      length: [50, 90]      # 8-12 bays
+      bay_length: [4.5, 6.5]
+      bay_count: [8, 12]
+      height: [20, 35]
+    north_aisle:
+      description: "Processional aisle flanking nave to the north"
+      width: [4, 7]
+      height: [10, 18]
+    south_aisle:
+      description: "Processional aisle flanking nave to the south"
+      width: [4, 7]
+      height: [10, 18]
+    transept:
+      description: "Cross-arm creating cruciform plan"
+      width: [10, 17]       # matches nave width typically
+      length: [25, 65]      # total N-S, Chartres 63.4m
+      height: [20, 35]      # matches nave height
+    crossing:
+      description: "Intersection of nave and transept beneath tower/lantern"
+      plan: "square"
+      side: [13, 17]
+      height: [25, 45]      # tower/lantern above
+    chancel:
+      description: "Eastern arm containing choir and high altar"
+      width: [10, 17]
+      length: [15, 35]
+      height: [20, 35]
+    ambulatory:
+      description: "Curved aisle behind the high altar allowing procession"
+      width: [3, 6]
+      height: [10, 18]
+    radiating_chapels:
+      description: "Small chapels projecting from the ambulatory"
+      count: [3, 7]
+      width: [3, 5]
+      depth: [3, 6]
+    chapter_house:
+      description: "Meeting room for clergy, often polygonal"
+      plan: "polygonal or rectangular"
+      diameter: [10, 20]    # if polygonal
+      width: [8, 15]        # if rectangular
+      height: [8, 15]
+    cloister:
+      description: "Covered walkway around a quadrangle, south of nave"
+      side: [25, 40]
+      walk_width: [2.5, 4]
+      height: [3, 5]
+    sacristy:
+      description: "Room for storing vestments and sacred vessels"
+      width: [5, 8]
+      length: [6, 10]
+    west_front:
+      description: "Ceremonial entrance facade with portals and towers"
+      width: [25, 45]
+      tower_count: 2
+      portal_count: 3
+  adjacency:
+    nave:
+      connects_to: [north_aisle, south_aisle, crossing, west_front]
+      alignment: "east-west axis"
+    north_aisle:
+      connects_to: [nave, transept, ambulatory]
+      position: "parallel to nave, north side"
+    south_aisle:
+      connects_to: [nave, transept, cloister, ambulatory]
+      position: "parallel to nave, south side"
+    crossing:
+      connects_to: [nave, transept, chancel]
+      position: "intersection of nave and transept"
+    transept:
+      connects_to: [crossing, north_aisle, south_aisle]
+      position: "perpendicular to nave"
+    chancel:
+      connects_to: [crossing, ambulatory, sacristy]
+      position: "east of crossing"
+    ambulatory:
+      connects_to: [chancel, radiating_chapels, north_aisle, south_aisle]
+      position: "curves behind chancel"
+    chapter_house:
+      connects_to: [cloister]
+      position: "east side of cloister"
+    cloister:
+      connects_to: [south_aisle, chapter_house, sacristy]
+      position: "south of nave"
+  structural_system:
+    primary_material: "ashlar stone (limestone or sandstone)"
+    wall_thickness: [1.2, 2.5]
+    pier_diameter: [1.5, 2.5]   # Chartres nave piers 2.41m
+    vault_type: "ribbed quadripartite or sexpartite"
+    flying_buttresses: true
+    buttress_depth: [2, 5]
+    foundation_depth: [3, 8]
+  key_features:
+    - "Pointed arches throughout"
+    - "Ribbed vaulting with bosses"
+    - "Flying buttresses transferring thrust"
+    - "Large tracery windows with stained glass"
+    - "Clerestory windows above arcade"
+    - "Triforium gallery between arcade and clerestory"
+    - "Rose window in west front and transept ends"
+    - "Pinnacles atop buttresses"
+    - "Gargoyles and grotesques for drainage"
+  vertical_stacking:
+    ground: [nave, aisles, transept, chancel, ambulatory, chapels, cloister]
+    gallery_level: [triforium]
+    clerestory_level: [clerestory_windows]
+    vault_level: [ribbed_vaults]
+    roof: [timber_roof_over_vaults, lead_covering]
+    towers: [bell_chamber, spire]
+
+parish_church:
+  description: >
+    Smaller church serving a local parish. Simpler than a cathedral but
+    following similar east-west orientation with nave and chancel.
+  period: "12th-16th century (and later)"
+  typical_footprint:
+    length: [18, 40]
+    width: [8, 18]
+  typical_heights:
+    nave: [5, 10]
+    tower: [12, 25]
+  rooms:
+    nave:
+      description: "Main congregational space"
+      width: [5, 9]
+      length: [12, 25]
+      height: [5, 10]
+    chancel:
+      description: "Eastern end containing altar"
+      width: [4, 7]        # often slightly narrower than nave
+      length: [5, 10]
+      height: [4, 8]
+    vestry:
+      description: "Priest's robing room, north side of chancel"
+      width: [3, 5]
+      length: [3, 5]
+    tower:
+      description: "Bell tower, typically at west end"
+      plan: "square"
+      side: [3.5, 6]
+      height: [12, 25]
+      stages: [3, 4]      # ground, ringing, bell, parapet
+    porch:
+      description: "Covered entrance, usually south side"
+      width: [2, 3.5]
+      depth: [2, 3]
+      height: [3, 5]
+    north_aisle:
+      description: "Optional side aisle"
+      width: [3, 5]
+    south_aisle:
+      description: "Optional side aisle"
+      width: [3, 5]
+  adjacency:
+    nave:
+      connects_to: [chancel, tower, porch, north_aisle, south_aisle]
+    chancel:
+      connects_to: [nave, vestry]
+      position: "east of nave, sometimes step up"
+    vestry:
+      connects_to: [chancel]
+      position: "north side of chancel"
+    tower:
+      connects_to: [nave]
+      position: "west end of nave"
+    porch:
+      connects_to: [nave]
+      position: "south wall of nave"
+  structural_system:
+    primary_material: "local stone or flint with stone dressings"
+    wall_thickness: [0.6, 1.2]
+    roof_type: "timber truss (crown post, hammer beam, or tie beam)"
+  key_features:
+    - "Chancel arch separating nave from chancel"
+    - "Rood screen (medieval period)"
+    - "Sedilia and piscina in chancel south wall"
+    - "Font near west door"
+    - "Perpendicular or Decorated tracery windows"
+    - "South porch with holy water stoup"
+  vertical_stacking:
+    ground: [nave, chancel, vestry, porch]
+    loft: [ringing_chamber_in_tower]
+    upper_tower: [bell_chamber]
+    roof: [timber_roof, lead_or_tile]
+
+abbey_monastery:
+  description: >
+    Self-contained monastic complex organized around a cloister,
+    following Benedictine or Cistercian plan. Church on the north
+    side of the cloister to maximise sunlight in the garth.
+  period: "9th-16th century"
+  typical_footprint:
+    overall: [80, 150]     # entire complex side
+    cloister_side: [25, 40]
+  rooms:
+    abbey_church:
+      description: "Monastic church, cruciform plan"
+      width: [15, 30]
+      length: [50, 90]
+      height: [15, 30]
+    cloister:
+      description: "Covered walkways around open garth"
+      side: [25, 40]
+      walk_width: [2.5, 4]
+      garth: "open lawn, sometimes with lavabo fountain"
+    chapter_house:
+      description: "Daily meeting room for reading of the Rule"
+      width: [8, 15]
+      length: [8, 15]
+      height: [6, 10]
+      plan: "rectangular or polygonal"
+    dormitory:
+      description: "Monks sleeping quarters, upper floor of east range"
+      width: [7, 10]
+      length: [20, 40]
+      note: "Connected to church for nocturnal offices"
+    refectory:
+      description: "Dining hall, south range (later turned perpendicular)"
+      width: [7, 10]
+      length: [15, 30]
+      height: [5, 8]
+    kitchen:
+      description: "Cooking facility near refectory"
+      width: [7, 12]
+      length: [7, 12]
+      note: "Often square with central hearth and louvered lantern"
+    scriptorium:
+      description: "Writing room, east range ground floor"
+      width: [5, 8]
+      length: [8, 15]
+    warming_house:
+      description: "Calefactory - only heated room besides kitchen"
+      width: [6, 10]
+      length: [6, 10]
+    infirmary:
+      description: "Hospital for sick monks, east of main complex"
+      width: [6, 10]
+      length: [15, 25]
+    cellar:
+      description: "Storage, west range ground floor"
+      width: [7, 10]
+      length: [20, 35]
+    guest_house:
+      description: "Lodging for visitors, west range upper or separate"
+      width: [6, 10]
+      length: [12, 20]
+    abbots_lodging:
+      description: "Private quarters for abbot"
+      width: [6, 10]
+      length: [10, 15]
+    reredorter:
+      description: "Toilets, connected to dormitory"
+      width: [3, 5]
+      length: [8, 15]
+      note: "Built over a water channel"
+    sacristy:
+      description: "Storage for sacred vessels, near church"
+      width: [4, 6]
+      length: [4, 8]
+  adjacency:
+    abbey_church:
+      connects_to: [cloister, dormitory, sacristy]
+      position: "north side of cloister"
+    cloister:
+      connects_to: [abbey_church, chapter_house, refectory, cellar, scriptorium]
+      position: "central organizing space"
+    chapter_house:
+      connects_to: [cloister, sacristy]
+      position: "east range, accessed from east walk"
+    dormitory:
+      connects_to: [abbey_church, reredorter, chapter_house]
+      position: "upper floor of east range"
+    refectory:
+      connects_to: [cloister, kitchen]
+      position: "south range"
+    kitchen:
+      connects_to: [refectory, cellar]
+      position: "south-west corner"
+    scriptorium:
+      connects_to: [cloister]
+      position: "east range ground floor, near chapter house"
+    warming_house:
+      connects_to: [cloister]
+      position: "east or south range"
+    infirmary:
+      connects_to: [cloister]
+      position: "east of east range, separate building"
+    cellar:
+      connects_to: [cloister, kitchen, guest_house]
+      position: "west range ground floor"
+    guest_house:
+      connects_to: [cellar]
+      position: "west range upper floor or separate"
+    abbots_lodging:
+      connects_to: [cloister]
+      position: "separate house, often south-east"
+  structural_system:
+    primary_material: "stone (church and cloister), stone or timber-frame (ranges)"
+    wall_thickness: [0.8, 2.0]
+    roof_type: "timber truss with tile or lead"
+  key_features:
+    - "Cloister as organizing principle"
+    - "East range: chapter house, sacristy, scriptorium below, dormitory above"
+    - "South range: refectory (may be perpendicular)"
+    - "West range: cellarer's store and guest accommodation"
+    - "Night stair from dormitory to church transept"
+    - "Day stair from dormitory to cloister"
+    - "Lavabo/fountain in cloister garth for hand washing"
+  vertical_stacking:
+    ground_east_range: [sacristy, chapter_house, scriptorium, warming_house]
+    upper_east_range: [dormitory, reredorter]
+    ground_west_range: [cellar, stores]
+    upper_west_range: [guest_house]
+    ground_south_range: [refectory]
+
+greek_roman_temple:
+  description: >
+    Classical temple with peristyle colonnade surrounding an inner
+    cella containing the cult statue. Elevated on a stylobate.
+  period: "7th century BC - 4th century AD"
+  typical_footprint:
+    length: [20, 70]       # Parthenon ~70m
+    width: [10, 35]        # Parthenon ~31m
+  typical_heights:
+    column_height: [5, 12]  # varies by order
+    entablature: [1.5, 3]
+    pediment_peak: [8, 18]
+  rooms:
+    cella:
+      description: "Inner sanctuary housing the cult statue"
+      width: [5, 20]        # small shrine 5m, Parthenon 19.2m
+      length: [10, 30]      # Parthenon 29.8m
+      height: [6, 15]
+    pronaos:
+      description: "Front porch with columns in antis or prostyle"
+      width: [5, 20]        # matches cella width
+      depth: [3, 8]
+    opisthodomos:
+      description: "Rear porch, often used as treasury"
+      width: [5, 20]
+      depth: [3, 8]
+    peristyle:
+      description: "Surrounding colonnade"
+      column_count_front: [4, 8]    # tetrastyle to octastyle
+      column_count_side: [8, 17]    # typically 2n+1 of front
+      intercolumniation: [2, 4]     # spacing between columns
+      colonnade_depth: [2, 4]       # one column diameter + passage
+    adyton:
+      description: "Inner sanctum behind cella (Greek only, optional)"
+      width: [3, 8]
+      depth: [3, 6]
+  adjacency:
+    pronaos:
+      connects_to: [cella, peristyle]
+      position: "east front"
+    cella:
+      connects_to: [pronaos, opisthodomos, adyton]
+      position: "center of temple"
+    opisthodomos:
+      connects_to: [cella, peristyle]
+      position: "west rear"
+    peristyle:
+      connects_to: [pronaos, opisthodomos]
+      position: "surrounds cella on all four sides"
+  structural_system:
+    primary_material: "marble or limestone"
+    column_orders:
+      doric:
+        column_diameter: [1.0, 2.0]
+        height_to_diameter_ratio: [5.5, 6.5]
+        fluting: 20
+      ionic:
+        column_diameter: [0.8, 1.5]
+        height_to_diameter_ratio: [8, 10]
+        fluting: 24
+      corinthian:
+        column_diameter: [0.8, 1.5]
+        height_to_diameter_ratio: [10, 12]
+        fluting: 24
+    wall_thickness: [0.8, 1.5]
+    roof_type: "timber truss with marble or terracotta tiles"
+    stylobate_height: [0.5, 2.0]
+    steps: 3               # standard for Greek temples
+  key_features:
+    - "Peripteral colonnade (columns all around)"
+    - "Stylobate with 3 steps (crepidoma)"
+    - "Entablature: architrave, frieze, cornice"
+    - "Pediment with sculptural decoration"
+    - "Entasis (slight swelling of columns)"
+    - "Optical refinements (curvature of stylobate)"
+    - "Roman variant: pseudoperipteral with engaged columns, high podium"
+  vertical_stacking:
+    base: [crepidoma, stylobate]
+    floor: [cella, pronaos, opisthodomos]
+    roof: [timber_truss, terracotta_or_marble_tiles]
+    pediment: [triangular_gable_with_sculpture]
+
+egyptian_pyramid:
+  description: >
+    Monumental tomb structure with internal chambers and passages.
+    Based on the Great Pyramid of Giza as the archetypal example.
+  period: "27th-16th century BC"
+  typical_footprint:
+    base_side: [50, 230]   # Great Pyramid 230m
+  typical_heights:
+    apex: [40, 147]        # Great Pyramid 146.6m
+  slope_angle: [51, 53]    # degrees; Great Pyramid 51.84
+  rooms:
+    kings_chamber:
+      description: "Principal burial chamber, granite-lined"
+      width: 5.2
+      length: 10.5
+      height: 5.8
+      material: "granite"
+      note: "Contains sarcophagus; stress-relieving chambers above"
+    queens_chamber:
+      description: "Secondary chamber below king's chamber"
+      width: 5.23
+      length: 5.75
+      height: 6.2           # pointed gable roof
+      roof_type: "pointed gable"
+    subterranean_chamber:
+      description: "Rough-hewn chamber below ground level"
+      width: 8.4
+      length: 14
+      height: 3.5
+      note: "Cut into bedrock, possibly abandoned"
+    grand_gallery:
+      description: "Ascending corbelled passage leading to king's chamber"
+      length: 47
+      width_base: 2.1
+      width_top: 1.0        # corbelled walls narrow upward
+      height: 8.5
+      slope_angle: 26
+    ascending_passage:
+      description: "Passage from entrance to grand gallery junction"
+      width: 1.1
+      height: 1.2
+      slope_angle: 26
+    descending_passage:
+      description: "Passage from entrance down to subterranean chamber"
+      width: 1.1
+      height: 1.2
+      slope_angle: 26
+    entrance:
+      description: "Original entrance on north face"
+      height_above_base: 17   # on the north face
+  adjacency:
+    entrance:
+      connects_to: [descending_passage, ascending_passage]
+      position: "north face, 17m above base"
+    descending_passage:
+      connects_to: [entrance, subterranean_chamber]
+      direction: "slopes downward into bedrock"
+    ascending_passage:
+      connects_to: [entrance, grand_gallery, queens_chamber]
+      direction: "slopes upward to gallery"
+    grand_gallery:
+      connects_to: [ascending_passage, kings_chamber]
+      direction: "continues upward slope"
+    kings_chamber:
+      connects_to: [grand_gallery]
+      position: "approximately center of pyramid, upper third"
+    queens_chamber:
+      connects_to: [ascending_passage]
+      position: "center of pyramid, lower than king's chamber"
+    subterranean_chamber:
+      connects_to: [descending_passage]
+      position: "below ground level, beneath pyramid center"
+  structural_system:
+    primary_material: "limestone blocks (core), granite (chambers)"
+    casing: "fine white limestone (Tura limestone)"
+    block_size: [1.0, 1.5]   # average block 1-1.5m
+    block_weight: "2.5 tonnes average, up to 80 tonnes (granite)"
+    stress_relief: "5 chambers of granite beams above king's chamber"
+  key_features:
+    - "Precise cardinal orientation (north face)"
+    - "Corbelled construction in grand gallery"
+    - "Granite portcullis blocking system"
+    - "Air shafts from chambers to exterior"
+    - "Relieving chambers above king's chamber"
+    - "Pyramidion (capstone) at apex"
+
+# =============================================================================
+# FORTIFIED
+# =============================================================================
+
+medieval_castle:
+  description: >
+    Fortified residence combining military defence with domestic
+    accommodation. Keep (donjon) as stronghold, with curtain walls,
+    towers, gatehouse, and bailey.
+  period: "11th-15th century"
+  typical_footprint:
+    bailey: [40, 120]       # inner bailey diameter/side
+    keep_side: [15, 30]     # square keep
+    curtain_wall_perimeter: [150, 500]
+  typical_heights:
+    keep: [20, 35]
+    curtain_wall: [6, 12]
+    tower: [15, 25]
+  rooms:
+    keep:
+      description: "Central stronghold tower, last line of defence"
+      plan: "square or rectangular"
+      width: [15, 25]
+      length: [15, 30]
+      stories: [3, 5]
+      wall_thickness: [2.5, 4.5]
+    great_hall:
+      description: "Principal room for feasting, courts, and ceremony"
+      width: [7, 17]         # Winchester 16.8m
+      length: [15, 35]       # Winchester 33.8m, proportions 2:1 to 3:1
+      height: [7, 14]        # Durham 14m
+      note: "Ratio length:width typically 2:1 to 3:1; height >= 2x width"
+    solar:
+      description: "Lord's private living chamber"
+      width: [5, 8]
+      length: [6, 10]
+    chapel:
+      description: "Private place of worship"
+      width: [4, 8]
+      length: [6, 12]
+    kitchen:
+      description: "Cooking facility, often separate building"
+      width: [6, 10]
+      length: [6, 12]
+      note: "Separate from keep or connected by covered passage"
+    buttery:
+      description: "Storage for drink (beer, wine)"
+      width: [3, 5]
+      length: [4, 7]
+    pantry:
+      description: "Storage for bread and dry goods"
+      width: [3, 5]
+      length: [4, 7]
+    dungeon:
+      description: "Underground prison/storage"
+      width: [3, 6]
+      length: [3, 6]
+      note: "Often in keep basement or tower base"
+    guardrooms:
+      description: "Rooms for garrison"
+      width: [3, 5]
+      length: [4, 6]
+      count: [2, 6]
+    gatehouse:
+      description: "Fortified entrance through curtain wall"
+      width: [8, 15]
+      depth: [8, 15]
+      passage_width: [2.5, 4]
+      stories: [2, 4]
+      note: "Flanking towers, portcullis, murder holes"
+    curtain_wall:
+      description: "Outer defensive wall enclosing the bailey"
+      height: [6, 12]
+      thickness: [1.8, 3.5]
+      wall_walk_width: [1.2, 2.0]
+    mural_towers:
+      description: "Towers along curtain wall"
+      diameter: [6, 12]     # round towers
+      side: [5, 10]         # square towers
+      count: [4, 12]
+      spacing: [20, 40]     # along curtain wall
+    bailey:
+      description: "Enclosed courtyard"
+      area: [1500, 15000]   # sq meters
+  adjacency:
+    great_hall:
+      connects_to: [kitchen, buttery, pantry, solar, chapel]
+      position: "within keep or in bailey against curtain wall"
+    kitchen:
+      connects_to: [great_hall, buttery, pantry]
+      position: "adjacent to hall, screens passage, or separate building"
+    buttery:
+      connects_to: [great_hall, kitchen]
+      position: "at service end of hall (screens passage)"
+    pantry:
+      connects_to: [great_hall, kitchen]
+      position: "at service end of hall (screens passage)"
+    solar:
+      connects_to: [great_hall]
+      position: "upper end of hall (dais end), usually above"
+    chapel:
+      connects_to: [solar, great_hall]
+      position: "upper floor of keep or adjacent to solar"
+    gatehouse:
+      connects_to: [bailey, curtain_wall]
+      position: "entrance through curtain wall"
+    dungeon:
+      connects_to: [keep]
+      position: "basement of keep"
+  structural_system:
+    primary_material: "stone (ashlar or rubble with ashlar dressings)"
+    keep_wall_thickness: [2.5, 4.5]
+    curtain_wall_thickness: [1.8, 3.5]
+    foundation: "deep stone on bedrock or motte"
+    roof_type: "timber truss with lead or tile"
+  key_features:
+    - "Screens passage between hall and service rooms"
+    - "Dais at upper end of hall"
+    - "Minstrels gallery above screens passage"
+    - "Garderobe towers (latrines)"
+    - "Portcullis and drawbridge at gatehouse"
+    - "Murder holes (meurtriere) in gate passage ceiling"
+    - "Arrow loops in walls and towers"
+    - "Crenellations (merlons and embrasures) on wall tops"
+    - "Spiral stairs in towers (clockwise ascending for defender advantage)"
+  vertical_stacking:
+    basement: [dungeon, stores, well]
+    ground_floor: [great_hall, kitchen, buttery, pantry, guardrooms]
+    first_floor: [solar, chapel, bedchambers]
+    upper_floors: [additional_chambers, garrison_quarters]
+    roof: [wall_walk, battlements]
+
+fortified_manor_house:
+  description: >
+    Defended domestic residence with moat, gatehouse, and crenellations
+    but less military emphasis than a castle. Courtyard plan.
+  period: "13th-16th century"
+  typical_footprint:
+    courtyard: [30, 50]     # side of courtyard
+    overall: [40, 70]       # including moat
+    moat_width: [4.5, 7.5]  # Stokesay 4.6-7.6m
+  typical_heights:
+    hall: [6, 10]
+    gatehouse: [8, 15]
+    wall: [5, 10]           # Stokesay wall 10m from moat base
+  rooms:
+    great_hall:
+      description: "Main living and reception room"
+      width: [6, 10]
+      length: [12, 20]
+      height: [5, 9]
+    solar:
+      description: "Private chamber for the lord's family"
+      width: [5, 8]
+      length: [6, 10]
+    kitchen:
+      description: "Cooking area, detached or attached"
+      width: [5, 8]
+      length: [5, 10]
+    buttery:
+      width: [3, 5]
+      length: [3, 5]
+    pantry:
+      width: [3, 5]
+      length: [3, 5]
+    chapel:
+      width: [4, 6]
+      length: [6, 10]
+    gatehouse:
+      description: "Fortified entrance with lodgings above"
+      width: [7, 14]        # Stanway 44ft = 13.4m frontage
+      depth: [5, 8]         # Stanway 22ft = 6.7m
+      stories: [2, 3]
+    courtyard:
+      description: "Central open space"
+      width: [30, 46]       # Stokesay 46m
+      length: [30, 38]      # Stokesay 38m
+    moat:
+      width: [4.5, 7.5]
+  adjacency:
+    great_hall:
+      connects_to: [solar, kitchen, buttery, pantry, courtyard]
+      position: "principal range facing courtyard"
+    solar:
+      connects_to: [great_hall, chapel]
+      position: "upper end of hall"
+    kitchen:
+      connects_to: [great_hall, buttery, pantry]
+      position: "service end of hall"
+    gatehouse:
+      connects_to: [courtyard, moat]
+      position: "entrance through outer wall"
+    chapel:
+      connects_to: [solar]
+      position: "near solar, first floor"
+  structural_system:
+    primary_material: "stone walls with timber-frame upper stories possible"
+    wall_thickness: [0.6, 1.5]
+    moat: true
+    crenellations: "license to crenellate required"
+  key_features:
+    - "Moat with drawbridge"
+    - "Gatehouse with lodgings above"
+    - "Crenellated parapets"
+    - "Courtyard plan"
+    - "Screens passage in hall"
+    - "Less military than castle; more domestic"
+
+city_gate:
+  description: >
+    Fortified gateway through a city wall, with flanking towers,
+    guard rooms, and accommodation above the passage.
+  period: "12th-16th century"
+  typical_footprint:
+    width: [8, 18]          # overall including towers
+    depth: [6, 15]
+  typical_heights:
+    overall: [10, 18]       # Canterbury Westgate 18m
+    passage: [3.5, 5]
+  rooms:
+    gate_passage:
+      description: "Arched vehicle/pedestrian passage"
+      width: [2.5, 4]       # enough for cart
+      height: [3.5, 5]
+      length: [5, 12]
+    flanking_towers:
+      description: "Defensive towers on either side of passage"
+      diameter: [4, 8]
+      height: [10, 18]
+      stories: [2, 4]
+      count: 2
+    guardrooms:
+      description: "Ground-floor rooms for watch"
+      width: [3, 5]
+      length: [3, 5]
+      count: 2
+    upper_chambers:
+      description: "Rooms above passage for storage, chapel, or lodging"
+      width: [6, 12]
+      length: [4, 8]
+      stories: [1, 3]
+    portcullis_chamber:
+      description: "Room above gate for operating portcullis mechanism"
+      width: [3, 5]
+      length: [3, 5]
+  adjacency:
+    gate_passage:
+      connects_to: [guardrooms, flanking_towers]
+      position: "center of structure"
+    guardrooms:
+      connects_to: [gate_passage, flanking_towers]
+      position: "ground floor flanking passage"
+    flanking_towers:
+      connects_to: [guardrooms, upper_chambers, city_wall]
+      position: "either side of passage"
+    upper_chambers:
+      connects_to: [flanking_towers, portcullis_chamber]
+      position: "above gate passage"
+  structural_system:
+    primary_material: "stone"
+    wall_thickness: [1.5, 3.0]
+    gate_type: "pointed or round arch"
+    portcullis: true
+    machicolations: "optional"
+  key_features:
+    - "Portcullis (one or two)"
+    - "Murder holes in passage ceiling"
+    - "Arrow loops in flanking towers"
+    - "Drawbridge or removable bridge section"
+    - "Crenellated parapet"
+    - "Connection to city wall walk"
+
+# =============================================================================
+# GRAND RESIDENTIAL
+# =============================================================================
+
+victorian_mansion:
+  description: >
+    Large upper-class residence with strict separation between family
+    and servant spaces. Formal reception rooms, private bedrooms,
+    extensive service wing.
+  period: "1840-1901"
+  typical_footprint:
+    width: [15, 30]
+    length: [20, 45]
+    total_area: [400, 1500]  # sq meters
+  typical_heights:
+    ground_floor: [3.3, 4.0]
+    first_floor: [3.0, 3.6]
+    second_floor: [2.7, 3.0]
+    servants_attic: [2.2, 2.7]
+    basement: [2.4, 3.0]
+  rooms:
+    entrance_hall:
+      description: "Grand reception hall with staircase"
+      width: [4, 7]
+      length: [6, 12]
+      height: [3.5, 6]      # sometimes double-height
+    morning_room:
+      description: "Lady's daytime sitting room, east-facing"
+      width: [4, 6]
+      length: [5, 7]
+    drawing_room:
+      description: "Principal reception room for entertaining"
+      width: [5, 8]
+      length: [7, 12]
+      note: "Largest reception room; sometimes entire first floor in town"
+    dining_room:
+      description: "Formal dining, adjacent to service"
+      width: [5, 7]
+      length: [6, 10]
+    billiard_room:
+      description: "Gentlemen's recreation room"
+      width: [5, 7]
+      length: [7, 10]
+      note: "Requires space for cue clearance around table"
+    conservatory:
+      description: "Glass-roofed garden room"
+      width: [4, 7]
+      length: [6, 12]
+    library:
+      description: "Book room and study"
+      width: [4, 7]
+      length: [5, 8]
+    master_bedroom:
+      description: "Principal bedroom"
+      width: [4.5, 6]
+      length: [5, 7]
+    dressing_room:
+      description: "Attached to bedroom for dressing"
+      width: [3, 4]
+      length: [3, 5]
+    secondary_bedrooms:
+      description: "Family and guest bedrooms"
+      width: [3.5, 5]
+      length: [4, 6]
+      count: [4, 10]
+    nursery:
+      description: "Children's room, upper floor"
+      width: [4, 6]
+      length: [5, 8]
+    kitchen:
+      description: "Large service kitchen"
+      width: [5, 7]
+      length: [6, 9]
+    scullery:
+      description: "Dish washing and rough preparation"
+      width: [3, 4]
+      length: [4, 6]
+    larder:
+      description: "Cold food storage, north-facing"
+      width: [2, 3]
+      length: [3, 5]
+    boot_room:
+      description: "Shoe cleaning and outdoor clothing"
+      width: [2, 3]
+      length: [2, 4]
+    butlers_pantry:
+      description: "Silver storage and butler's domain"
+      width: [3, 4]
+      length: [4, 6]
+    wine_cellar:
+      description: "Below-ground wine storage"
+      width: [3, 5]
+      length: [4, 8]
+    servants_hall:
+      description: "Dining room for servants"
+      width: [4, 6]
+      length: [5, 8]
+    servants_bedrooms:
+      description: "Small attic rooms for live-in staff"
+      width: [2.5, 3.5]
+      length: [3, 4.5]
+      count: [3, 8]
+    laundry:
+      description: "Washing and pressing"
+      width: [4, 6]
+      length: [5, 8]
+    coal_cellar:
+      description: "Fuel storage"
+      width: [2, 3]
+      length: [3, 5]
+  adjacency:
+    entrance_hall:
+      connects_to: [drawing_room, dining_room, morning_room, library, main_stair]
+      position: "center front"
+    morning_room:
+      connects_to: [entrance_hall]
+      position: "ground floor, east-facing"
+    drawing_room:
+      connects_to: [entrance_hall, conservatory]
+      position: "ground floor front, or first floor in town house"
+    dining_room:
+      connects_to: [entrance_hall, butlers_pantry]
+      position: "ground floor, near service"
+    billiard_room:
+      connects_to: [entrance_hall, library]
+      position: "ground floor, gentlemen's side"
+    conservatory:
+      connects_to: [drawing_room]
+      position: "south or west side, garden access"
+    kitchen:
+      connects_to: [scullery, larder, butlers_pantry, servants_hall, back_stair]
+      position: "basement or rear ground floor"
+    butlers_pantry:
+      connects_to: [dining_room, kitchen]
+      position: "between dining room and kitchen"
+    servants_hall:
+      connects_to: [kitchen]
+      position: "near kitchen in service wing"
+    wine_cellar:
+      connects_to: [butlers_pantry]
+      position: "basement"
+  structural_system:
+    primary_material: "brick with stone dressings, or stone"
+    wall_thickness: [0.35, 0.6]   # 1.5 to 2 brick thick
+    internal_walls: [0.12, 0.23]  # single brick or lath and plaster
+    floor_structure: "timber joists"
+    roof: "slate on timber with lead valleys"
+  key_features:
+    - "Separate servant and family staircases"
+    - "Service corridor (baize door separation)"
+    - "Elaborate plasterwork cornices and ceiling roses"
+    - "Bay windows on principal rooms"
+    - "Cast-iron fireplaces in every room"
+    - "Coal-fired range in kitchen"
+    - "Bell system for summoning servants"
+    - "Servants' call board in kitchen passage"
+  vertical_stacking:
+    basement: [kitchen, scullery, larder, wine_cellar, coal_cellar, servants_hall, laundry]
+    ground_floor: [entrance_hall, morning_room, dining_room, drawing_room, library, billiard_room, conservatory]
+    first_floor: [master_bedroom, dressing_room, secondary_bedrooms, nursery]
+    second_floor: [additional_bedrooms, nursery]
+    attic: [servants_bedrooms]
+
+georgian_country_house:
+  description: >
+    Symmetrical classical house with central hall and balanced wings.
+    Palladian proportions, high ceilings, sash windows. Double-pile plan.
+  period: "1714-1830"
+  typical_footprint:
+    width: [15, 25]        # 5-7 bays wide
+    depth: [12, 18]        # double-pile (2 rooms deep)
+    total_area: [300, 1000]
+  typical_heights:
+    ground_floor: [3.0, 3.6]
+    first_floor: [3.3, 4.0]   # piano nobile is tallest
+    second_floor: [2.7, 3.3]
+    basement: [2.4, 3.0]
+  rooms:
+    entrance_hall:
+      description: "Central hall with grand staircase"
+      width: [4, 7]
+      length: [6, 10]
+      height: [3.3, 6]      # sometimes double-height
+    saloon:
+      description: "Principal reception room (drawing room)"
+      width: [6, 9]
+      length: [8, 12]
+      note: "Often at piano nobile (first floor)"
+    dining_room:
+      description: "Formal dining"
+      width: [5, 8]
+      length: [6, 10]
+    library:
+      description: "Book room and gentleman's retreat"
+      width: [5, 7]
+      length: [6, 9]
+    breakfast_room:
+      description: "Informal family dining"
+      width: [4, 6]
+      length: [5, 7]
+    bedchambers:
+      description: "Bedrooms on upper floors"
+      width: [4, 6]
+      length: [5, 7]
+      count: [4, 8]
+    dressing_rooms:
+      description: "Attached to principal bedrooms"
+      width: [3, 4]
+      length: [3, 5]
+    kitchen:
+      description: "In basement or service wing"
+      width: [5, 7]
+      length: [5, 8]
+    servants_quarters:
+      description: "Attic rooms or basement"
+      width: [2.5, 4]
+      length: [3, 5]
+  adjacency:
+    entrance_hall:
+      connects_to: [saloon, dining_room, library, staircase]
+      position: "center of ground floor"
+    saloon:
+      connects_to: [entrance_hall]
+      position: "center back or first floor center"
+    dining_room:
+      connects_to: [entrance_hall, breakfast_room]
+      position: "one side of hall"
+    library:
+      connects_to: [entrance_hall]
+      position: "opposite side of hall from dining"
+    kitchen:
+      connects_to: [dining_room]
+      position: "basement or service wing"
+  structural_system:
+    primary_material: "brick (often rendered or stuccoed) or stone"
+    wall_thickness: [0.35, 0.7]
+    floor_structure: "timber joists"
+    roof: "slate or tile behind parapet"
+  key_features:
+    - "Perfect bilateral symmetry"
+    - "Central pedimented portico"
+    - "Sash windows with diminishing height per floor"
+    - "Rusticated ground floor"
+    - "Piano nobile with tallest windows"
+    - "Palladian proportions (room height:width:length ratios)"
+    - "Enfilade of rooms (doors aligned through sequence)"
+    - "Hidden service areas"
+    - "Balustrade parapet hiding roof"
+  vertical_stacking:
+    basement: [kitchen, servants_hall, larder, wine_cellar, coal_store]
+    ground_floor: [entrance_hall, dining_room, library, breakfast_room]
+    first_floor: [saloon, principal_bedchambers, dressing_rooms]
+    second_floor: [secondary_bedchambers, nursery]
+    attic: [servants_bedrooms]
+
+french_chateau:
+  description: >
+    Grand French country residence with formal gardens, central
+    corps de logis flanked by pavilions or wings, steep roofs.
+  period: "15th-18th century"
+  typical_footprint:
+    corps_de_logis_width: [15, 30]
+    corps_de_logis_depth: [10, 18]
+    wing_length: [15, 40]
+    courtyard_width: [20, 50]
+  typical_heights:
+    ground_floor: [3.5, 5]
+    first_floor: [3.5, 5]    # etage noble
+    mansard: [2.5, 3.5]
+  rooms:
+    vestibule:
+      description: "Entrance hall"
+      width: [5, 8]
+      length: [5, 10]
+    salon:
+      description: "Principal reception room"
+      width: [7, 12]
+      length: [10, 18]
+      height: [4, 6]
+    gallery:
+      description: "Long room for display and promenading"
+      width: [5, 8]
+      length: [20, 50]      # Versailles 73m (extreme)
+    dining_room:
+      description: "Salle a manger"
+      width: [6, 10]
+      length: [8, 14]
+    chapel:
+      description: "Private chapel within chateau"
+      width: [5, 8]
+      length: [8, 15]
+      height: [6, 12]       # often double-height
+    library:
+      width: [5, 8]
+      length: [6, 10]
+    bedchambers:
+      description: "Chambres with attached garde-robes"
+      width: [5, 7]
+      length: [6, 9]
+      count: [6, 20]
+    kitchen:
+      description: "Grand kitchen, often vaulted basement"
+      width: [6, 10]
+      length: [8, 14]
+    orangerie:
+      description: "Large glazed room for citrus trees"
+      width: [8, 15]
+      length: [20, 60]
+    guard_room:
+      description: "Room for household guards"
+      width: [5, 8]
+      length: [8, 12]
+    staircase:
+      description: "Grand stone staircase, often double-return"
+      width: [5, 8]
+      length: [8, 12]
+  adjacency:
+    vestibule:
+      connects_to: [salon, staircase, guard_room]
+      position: "center of corps de logis"
+    salon:
+      connects_to: [vestibule, gallery, dining_room]
+      position: "center of garden front"
+    gallery:
+      connects_to: [salon, chapel]
+      position: "wing or garden front"
+    chapel:
+      connects_to: [gallery, vestibule]
+      position: "wing pavilion"
+    kitchen:
+      connects_to: [dining_room]
+      position: "basement or separate wing"
+  structural_system:
+    primary_material: "limestone (tuffeau in Loire) or brick and stone (Louis XIII)"
+    wall_thickness: [0.6, 1.2]
+    roof: "slate mansard or steep hip with dormers"
+    floor: "stone vaults at ground, timber above"
+  key_features:
+    - "Corps de logis (main block) with flanking wings"
+    - "Cour d'honneur (entrance courtyard)"
+    - "Mansard roof with dormers"
+    - "Formal parterre gardens on axis"
+    - "Grand stone staircase"
+    - "Enfilade room arrangement"
+    - "Moat (earlier chateaux) or dry moat"
+    - "Corner towers or pavilions"
+    - "Rusticated quoins"
+  vertical_stacking:
+    basement: [kitchen, cellar, stores, servants]
+    ground_floor: [vestibule, guard_room, salon, dining_room]
+    first_floor: [gallery, chapel, principal_bedchambers]  # etage noble
+    second_floor: [secondary_bedchambers]
+    mansard: [servants_quarters, storage]
+
+japanese_traditional_house:
+  description: >
+    Post-and-beam timber house with tatami mat rooms, sliding
+    screens (fusuma/shoji), raised timber floor, and deep eaves.
+    Room sizes measured in tatami mats (jo).
+  period: "Edo period onward (17th-19th century)"
+  typical_footprint:
+    width: [8, 15]
+    depth: [8, 12]
+    total_area: [60, 120]   # traditional house ~120 sq m
+  typical_heights:
+    floor_to_ceiling: [2.3, 2.7]
+    raised_floor: [0.3, 0.6]   # above ground
+  tatami_standard:
+    kyoma: { width: 0.955, length: 1.91 }    # Kyoto/Western Japan
+    edoma: { width: 0.88, length: 1.76 }     # Tokyo/Eastern Japan
+    area_per_mat: [1.45, 1.82]               # sq meters
+  rooms:
+    genkan:
+      description: "Entrance hall where shoes are removed; step up to main floor"
+      width: [1.8, 3.6]
+      depth: [1.2, 2.0]
+      floor: "earth or stone (lower level)"
+    zashiki:
+      description: "Formal reception room with tokonoma alcove"
+      tatami: 8              # 8-mat room is standard formal room
+      width: 3.64            # 2 mats wide (edoma)
+      length: 7.04           # 4 mats long
+    chanoma:
+      description: "Family living/dining room with irori hearth"
+      tatami: [6, 8]
+    tokonoma:
+      description: "Decorative alcove in zashiki for scroll and flower arrangement"
+      width: [0.9, 1.8]     # one mat width
+      depth: [0.6, 0.9]
+      height: [1.8, 2.1]    # raised platform
+    bedrooms:
+      description: "Sleeping rooms, futons stored in oshiire"
+      tatami: [4.5, 6]
+      count: [2, 4]
+    kitchen:
+      description: "Daidokoro, often with earthen floor (doma)"
+      width: [2.5, 4]
+      length: [3, 5]
+      floor: "earth (doma) or raised timber"
+    engawa:
+      description: "Veranda/corridor running along outside of rooms"
+      width: [0.9, 1.3]     # one mat width typical
+      note: "Runs along south and east sides"
+    doma:
+      description: "Earth-floored area for work and cooking"
+      width: [2, 4]
+      length: [3, 6]
+    bathroom:
+      description: "Ofuro (soaking tub room)"
+      width: [1.5, 2.5]
+      length: [2, 3]
+    toilet:
+      description: "Separate from bathroom"
+      width: [0.9, 1.2]
+      length: [1.2, 1.8]
+    oshiire:
+      description: "Built-in closet for storing futons"
+      width: [1.7, 1.8]     # one mat length
+      depth: [0.8, 0.9]     # one mat width
+  adjacency:
+    genkan:
+      connects_to: [corridor, doma]
+      position: "entrance, lower level"
+    zashiki:
+      connects_to: [engawa, chanoma, tokonoma]
+      position: "south-facing, most prestigious position"
+    chanoma:
+      connects_to: [zashiki, kitchen, corridor]
+      position: "adjacent to zashiki"
+    engawa:
+      connects_to: [zashiki, chanoma, bedrooms]
+      position: "south and east perimeter"
+    kitchen:
+      connects_to: [chanoma, doma]
+      position: "north side"
+    doma:
+      connects_to: [genkan, kitchen]
+      position: "entrance area, earth floor"
+  structural_system:
+    primary_material: "timber post-and-beam (hinoki cypress, cedar)"
+    post_spacing: [0.9, 1.82]   # based on tatami module
+    wall_type: "sliding screens (fusuma between rooms, shoji to engawa)"
+    exterior_wall: "earth (tsuchikabe) on bamboo lath"
+    wall_thickness: [0.10, 0.15]
+    roof: "tile (kawara), thatch (kayabuki), or cedar shingle"
+    foundation: "stone footings (no continuous foundation)"
+  key_features:
+    - "Modular tatami-based room sizing"
+    - "Fusuma (opaque sliding partitions between rooms)"
+    - "Shoji (translucent paper sliding screens to engawa)"
+    - "Tokonoma alcove with raised floor"
+    - "Ranma (transom openwork above fusuma)"
+    - "Deep overhanging eaves"
+    - "Engawa as transitional indoor-outdoor space"
+    - "Step up from genkan to main floor"
+    - "Rooms can be opened to create larger spaces"
+  vertical_stacking:
+    foundation: [stone_footings]
+    ground: [doma, genkan]
+    raised_floor: [tatami_rooms, engawa]
+    roof: [exposed_timber_structure]
+    note: "Typically single story; some two-story with steeper stairs"
+
+# =============================================================================
+# VERNACULAR / RURAL
+# =============================================================================
+
+english_cottage:
+  description: >
+    Small rural dwelling, typically two-up two-down plan with
+    central chimney stack. Inglenook fireplace, low ceilings,
+    thick walls.
+  period: "16th-19th century"
+  typical_footprint:
+    width: [5, 8]
+    depth: [4, 6]
+    total_area: [30, 60]    # per floor
+  typical_heights:
+    ground_floor: [1.9, 2.3]  # low ceilings
+    first_floor: [1.8, 2.1]   # often under thatch
+  rooms:
+    parlour:
+      description: "Best room, front ground floor"
+      width: [3, 4]
+      length: [3.5, 5]
+    kitchen_living:
+      description: "Main living room with fireplace/range"
+      width: [3, 4.5]
+      length: [3.5, 5]
+    inglenook:
+      description: "Large recessed fireplace alcove with seating"
+      width: [1.8, 3]        # opening width
+      depth: [0.9, 1.5]
+      height: [1.5, 1.8]     # lintel height
+      note: "May contain bread oven in back wall"
+    bread_oven:
+      description: "Beehive oven built into chimney stack"
+      diameter: [0.6, 0.9]
+      note: "Accessed from inside inglenook"
+    scullery:
+      description: "Back kitchen for washing"
+      width: [2, 3]
+      length: [2, 3.5]
+      note: "Often a lean-to addition at rear"
+    bedroom_front:
+      description: "Front bedroom, upper floor"
+      width: [3, 4]
+      length: [3.5, 5]
+    bedroom_rear:
+      description: "Rear bedroom, upper floor"
+      width: [3, 4]
+      length: [3.5, 5]
+  adjacency:
+    parlour:
+      connects_to: [kitchen_living]
+      position: "front, one side of chimney"
+    kitchen_living:
+      connects_to: [parlour, scullery]
+      position: "front or rear, other side of chimney"
+    inglenook:
+      connects_to: [kitchen_living]
+      position: "within kitchen, built into chimney breast"
+    scullery:
+      connects_to: [kitchen_living]
+      position: "rear lean-to"
+    bedroom_front:
+      connects_to: [bedroom_rear, stair]
+      position: "above parlour"
+    bedroom_rear:
+      connects_to: [bedroom_front]
+      position: "above kitchen"
+  structural_system:
+    primary_material: "cob, stone, or timber-frame with wattle-and-daub infill"
+    wall_thickness: [0.4, 0.9]    # cob walls very thick
+    roof: "thatch, stone slate, or clay tile"
+    chimney: "stone or brick central stack"
+    floor_ground: "flagstone or beaten earth"
+    floor_upper: "timber boards on joists"
+  key_features:
+    - "Central chimney stack dividing ground floor"
+    - "Inglenook fireplace with bread oven"
+    - "Two-up two-down plan"
+    - "Low ceilings with exposed beams"
+    - "Small casement windows with leaded lights"
+    - "Steep narrow staircase beside chimney"
+    - "Lean-to additions at rear"
+    - "Thick walls (especially cob)"
+  vertical_stacking:
+    ground: [parlour, kitchen_living, scullery]
+    upper: [bedroom_front, bedroom_rear]
+    roof: [thatch_or_tile]
+
+farmhouse:
+  description: >
+    Rural dwelling centered on a large kitchen as the main living
+    and working room. Service rooms for dairy, food storage, and
+    processing. Often attached to or near agricultural buildings.
+  period: "16th-19th century"
+  typical_footprint:
+    width: [7, 12]
+    depth: [5, 8]
+    total_area: [50, 90]
+  typical_heights:
+    ground_floor: [2.1, 2.7]
+    first_floor: [2.0, 2.4]
+  rooms:
+    kitchen:
+      description: "Main living and working room with large fireplace/range"
+      width: [4.5, 7]
+      length: [5, 8]
+      note: "Largest room; center of daily life"
+    parlour:
+      description: "Best room for guests and Sundays"
+      width: [3.5, 5]
+      length: [4, 6]
+    dairy:
+      description: "Cool room for milk, cream, butter, cheese"
+      width: [2.5, 4]
+      length: [3, 5]
+      note: "North-facing, stone or slate shelves, flagstone floor"
+    buttery:
+      description: "Storage for beer and cider"
+      width: [2, 3.5]
+      length: [2.5, 4]
+    pantry:
+      description: "Dry goods storage"
+      width: [2, 3]
+      length: [2.5, 4]
+    back_kitchen:
+      description: "Scullery for messy work, washing, brewing"
+      width: [3, 4]
+      length: [3, 5]
+    bedrooms:
+      description: "Upper floor sleeping rooms"
+      width: [3, 5]
+      length: [3.5, 5]
+      count: [2, 4]
+    cheese_room:
+      description: "Upper floor room for cheese aging (optional)"
+      width: [3, 5]
+      length: [4, 6]
+      note: "Sometimes above dairy for ventilation"
+  adjacency:
+    kitchen:
+      connects_to: [parlour, dairy, buttery, pantry, back_kitchen, stairs]
+      position: "center of house"
+    parlour:
+      connects_to: [kitchen]
+      position: "front of house, one end"
+    dairy:
+      connects_to: [kitchen]
+      position: "north side, off kitchen"
+    buttery:
+      connects_to: [kitchen]
+      position: "off kitchen, screens passage"
+    pantry:
+      connects_to: [kitchen]
+      position: "off kitchen, screens passage"
+    back_kitchen:
+      connects_to: [kitchen]
+      position: "rear, attached or lean-to"
+  structural_system:
+    primary_material: "stone (upland) or timber-frame with brick infill (lowland)"
+    wall_thickness: [0.45, 0.75]
+    roof: "stone slate, clay tile, or thatch"
+    floor_ground: "flagstone (kitchen, dairy), beaten earth"
+    floor_upper: "timber boards"
+  key_features:
+    - "Kitchen as hub of the plan"
+    - "Cross-passage plan (through passage)"
+    - "Large fireplace with oven and salt cupboard"
+    - "Dairy always north-facing for cool temperature"
+    - "Slate or stone shelving in dairy and pantry"
+    - "Bacon hooks in kitchen ceiling beams"
+    - "Service rooms clustered behind kitchen"
+
+longhouse:
+  description: >
+    Single-roof structure housing both human inhabitants and their
+    livestock, divided by a cross-passage. The byre (animal end)
+    is downhill for drainage. Common across medieval northern Europe.
+  period: "10th-16th century (and later in some areas)"
+  typical_footprint:
+    width: [5, 7]            # 16-23 feet
+    length: [12, 25]         # Anglo-Saxon 10-12m; Viking up to 75m
+  typical_heights:
+    eaves: [1.5, 2.5]
+    ridge: [3, 5]
+  rooms:
+    living_hall:
+      description: "Human living space at upper end"
+      width: [4.5, 6]
+      length: [5, 12]
+      note: "Central hearth, benches along walls"
+    cross_passage:
+      description: "Dividing corridor with doors on both sides"
+      width: [4.5, 6]
+      length: [1.5, 2.5]
+    byre:
+      description: "Animal shelter at lower end (shippon)"
+      width: [4.5, 6]
+      length: [5, 12]
+      note: "Drainage gutter along center, animals tethered along walls"
+    loft:
+      description: "Storage above byre or living area"
+      width: [4.5, 6]
+      length: [4, 8]
+      note: "Accessed by ladder; hay storage"
+  adjacency:
+    living_hall:
+      connects_to: [cross_passage]
+      position: "upper (uphill) end"
+    cross_passage:
+      connects_to: [living_hall, byre]
+      position: "center, with external doors on both long walls"
+    byre:
+      connects_to: [cross_passage]
+      position: "lower (downhill) end"
+  structural_system:
+    primary_material: "stone lower walls, cruck frame or post-and-truss"
+    wall_thickness: [0.6, 1.0]
+    roof: "thatch on timber cruck frame"
+    floor_living: "beaten earth, later flagstone"
+    floor_byre: "cobbled with drainage channel"
+  key_features:
+    - "Built on sloping ground (byre downhill)"
+    - "Central cross-passage with opposing doors"
+    - "Shared roof over humans and animals"
+    - "Central hearth (no chimney, smoke exits through thatch)"
+    - "Drainage channel in byre for waste"
+    - "Cruck frame construction"
+    - "Benches along long walls for sitting/sleeping"
+
+barn:
+  description: >
+    Agricultural building for storing harvested grain and threshing.
+    Three-bay plan with central threshing floor flanked by storage bays.
+  period: "Medieval to 19th century"
+  typical_footprint:
+    width: [6, 15]          # 3-bay: 18-50ft; larger dairy barns wider
+    length: [12, 30]        # 3 bays at ~5m each
+    bay_width: [4.5, 5.5]   # ~16ft between bents
+  typical_heights:
+    eaves: [3, 5]
+    ridge: [6, 10]
+    door_height: [3.5, 5]   # large wagon doors
+  rooms:
+    threshing_floor:
+      description: "Central bay for threshing grain with flails"
+      width: [4.5, 5.5]
+      length: [6, 15]       # full barn width
+      floor: "tightly fitted timber boards, stone, or packed earth"
+    storage_bay_1:
+      description: "Bay for unthreshed sheaves"
+      width: [4.5, 5.5]
+      length: [6, 15]
+    storage_bay_2:
+      description: "Bay for threshed grain and straw"
+      width: [4.5, 5.5]
+      length: [6, 15]
+    hayloft:
+      description: "Upper storage for hay"
+      width: [6, 15]        # full barn width
+      length: [6, 15]       # over one or both side bays
+      height: [2, 4]
+  adjacency:
+    storage_bay_1:
+      connects_to: [threshing_floor]
+      position: "one end bay"
+    threshing_floor:
+      connects_to: [storage_bay_1, storage_bay_2]
+      position: "central bay with large double doors on both long walls"
+    storage_bay_2:
+      connects_to: [threshing_floor]
+      position: "other end bay"
+    hayloft:
+      connects_to: [threshing_floor]
+      position: "above side bays, accessed by ladder"
+  structural_system:
+    primary_material: "timber frame (bents/trusses), or stone walls with timber roof"
+    bent_spacing: [4.5, 5.5]   # ~16ft
+    wall_material: "timber weatherboarding, brick, stone, or cob"
+    roof: "thatch, tile, or stone slate"
+    floor_threshing: "timber boards or stone flags (must be smooth)"
+  key_features:
+    - "Large double doors on both sides of threshing floor (for cross-draught)"
+    - "Smaller doors on opposite side"
+    - "Three-bay structure defined by bents"
+    - "Owl hole in gable for vermin control"
+    - "Cart access through central bay"
+    - "Ventilation slits in walls"
+
+stable:
+  description: >
+    Building for housing horses with individual stalls, tack storage,
+    and hay storage. Often associated with farms, inns, or large houses.
+  period: "Medieval to 19th century"
+  typical_footprint:
+    width: [5, 10]
+    length: [10, 25]
+  typical_heights:
+    ceiling: [3, 3.7]       # 10-12ft minimum
+    stall_partition: [2.3, 2.4]  # 7.5-8ft
+    hayloft: [2.5, 3]
+  rooms:
+    stalls:
+      description: "Individual horse boxes"
+      width: [3, 3.7]       # 10-12ft
+      length: [3, 4.3]      # 10-14ft; 12x12 most common
+      count: [2, 12]
+      partition_height: 2.4
+    central_aisle:
+      description: "Passage between stall rows"
+      width: [3, 4.3]       # 10-14ft recommended
+    tack_room:
+      description: "Storage for saddles, bridles, harness"
+      width: [3, 3.7]       # 10-12ft
+      length: [3, 3.7]      # 10-12ft for small stable
+    feed_room:
+      description: "Storage for grain and prepared feed"
+      width: [2.5, 3.5]
+      length: [3, 4]
+    hayloft:
+      description: "Upper floor for hay and straw storage"
+      width: [5, 10]        # full building width
+      length: [10, 25]
+      ceiling_height: [2.5, 3]
+    wash_bay:
+      description: "Area for grooming and washing horses"
+      width: [3, 3.7]
+      length: [3.7, 4.3]
+  adjacency:
+    stalls:
+      connects_to: [central_aisle]
+      position: "along one or both sides of aisle"
+    central_aisle:
+      connects_to: [stalls, tack_room, feed_room, wash_bay]
+      position: "center of building"
+    tack_room:
+      connects_to: [central_aisle]
+      position: "end of building or near entrance"
+    feed_room:
+      connects_to: [central_aisle]
+      position: "near stalls"
+    hayloft:
+      connects_to: [central_aisle]
+      position: "above stalls, accessed by ladder or external stair"
+  structural_system:
+    primary_material: "brick, stone, or timber-frame"
+    wall_thickness: [0.23, 0.45]
+    stall_partitions: "oak boards, 2in thick minimum"
+    floor: "cobblestone or brick with drainage slope"
+    roof: "tile or slate"
+  key_features:
+    - "Good ventilation (ridge vent, windows above stalls)"
+    - "Drainage slope away from stalls"
+    - "Hay rack and manger in each stall"
+    - "Cobbled floor with central drain"
+    - "Hayloft above with hay drops to mangers"
+    - "Mounting block outside entrance"
+    - "Hitching ring by entrance"
+
+# =============================================================================
+# URBAN / COMMERCIAL
+# =============================================================================
+
+medieval_shop:
+  description: >
+    Narrow urban plot with shop/workshop at ground level, living
+    quarters above, and storage undercroft below street level.
+    Jetted upper floors for additional space.
+  period: "13th-16th century"
+  typical_footprint:
+    width: [4, 7]            # narrow street frontage
+    depth: [8, 15]           # deep plot
+  typical_heights:
+    undercroft: [2.0, 2.5]
+    ground_floor: [2.4, 3.0]
+    upper_floors: [2.0, 2.5]
+    stories: [2, 4]
+  rooms:
+    undercroft:
+      description: "Vaulted storage below ground/street level"
+      width: [4, 7]
+      depth: [6, 12]
+      height: [2.0, 2.5]
+      note: "Half-storey below street, stone vaulted for fire resistance"
+    shopfront:
+      description: "Open-fronted shop facing street with shutters"
+      width: [3, 6]
+      depth: [3, 5]
+      note: "Counter/shelf folds down from shutter as display"
+    workshop:
+      description: "Workroom behind or integrated with shop"
+      width: [3, 6]
+      depth: [3, 6]
+    solar:
+      description: "Private living room on upper floor"
+      width: [4, 7]
+      depth: [4, 8]
+    bedchamber:
+      description: "Sleeping room, may be above solar"
+      width: [3, 6]
+      depth: [4, 7]
+    kitchen:
+      description: "Often rear ground floor or first floor"
+      width: [2.5, 4]
+      depth: [3, 5]
+  adjacency:
+    shopfront:
+      connects_to: [workshop, undercroft, street]
+      position: "ground floor, street front"
+    workshop:
+      connects_to: [shopfront, kitchen]
+      position: "ground floor, behind shop"
+    undercroft:
+      connects_to: [shopfront]
+      position: "below ground, accessed by internal stair or external hatch"
+    solar:
+      connects_to: [bedchamber]
+      position: "first floor"
+    bedchamber:
+      connects_to: [solar]
+      position: "first or second floor"
+    kitchen:
+      connects_to: [workshop, solar]
+      position: "rear ground floor or first floor"
+  structural_system:
+    primary_material: "timber-frame with wattle-and-daub or brick infill"
+    undercroft_material: "stone vault"
+    wall_thickness: [0.15, 0.30]  # timber frame
+    jettying: "upper floors project 0.3-0.6m over street"
+    roof: "tile or shingle (thatch banned in many towns)"
+  key_features:
+    - "Narrow frontage, deep plan"
+    - "Jettied (overhanging) upper floors"
+    - "Open shopfront with hinged shutters"
+    - "Lower shutter folds to display counter"
+    - "Upper shutter hinges up as canopy"
+    - "Undercroft for valuable storage"
+    - "Rear yard with well and privy"
+    - "Party walls shared with neighbors"
+
+victorian_terrace:
+  description: >
+    Row house sharing party walls, in 2-bay or 3-bay configurations.
+    Front parlour, rear living room, kitchen extension, bedrooms above.
+  period: "1840-1910"
+  variants:
+    two_bay:
+      description: "Narrower working/middle class terrace"
+      width: [4.5, 5.5]      # 15-18ft internal
+      depth: [8, 12]          # front rooms + rear rooms + kitchen extension
+      total_area: [70, 100]   # sq meters
+    three_bay:
+      description: "Wider middle/upper-middle class terrace"
+      width: [5.5, 7]         # 18-23ft internal
+      depth: [10, 15]
+      total_area: [90, 140]
+  typical_heights:
+    ground_floor: [2.7, 3.3]
+    first_floor: [2.7, 3.0]
+    second_floor: [2.4, 2.7]   # if present
+    basement: [2.2, 2.7]       # if present
+  rooms:
+    front_parlour:
+      description: "Best room, street-facing, often with bay window"
+      width: [3.5, 5.5]
+      length: [4, 5.5]
+      bay_window: true
+    rear_living_room:
+      description: "Everyday living/dining room"
+      width: [3.5, 5]
+      length: [3.5, 5]
+    hallway:
+      description: "Side passage from front door to rear"
+      width: [0.9, 1.2]
+      note: "Runs along one party wall"
+    kitchen:
+      description: "Rear extension, single-storey or two-storey"
+      width: [2.5, 4]
+      length: [3, 5]
+    scullery:
+      description: "Beyond kitchen for washing"
+      width: [2, 3]
+      length: [2, 3]
+    outside_wc:
+      description: "Toilet in rear yard"
+      width: [0.9, 1.2]
+      length: [1.2, 1.5]
+    front_bedroom:
+      description: "Main bedroom, full width of house"
+      width: [4.5, 6.5]
+      length: [4, 5.5]
+      bay_window: "possible (3-bay terrace)"
+    rear_bedroom:
+      description: "Smaller bedroom"
+      width: [3, 4.5]
+      length: [3.5, 5]
+    box_room:
+      description: "Small room above hallway or stairwell"
+      width: [1.5, 2.5]
+      length: [2, 3.5]
+    bathroom:
+      description: "If present; later addition above scullery"
+      width: [1.8, 2.5]
+      length: [2, 3]
+    cellar:
+      description: "Below front rooms (not always present)"
+      width: [3.5, 5.5]
+      length: [4, 5.5]
+  adjacency:
+    front_parlour:
+      connects_to: [hallway, rear_living_room]
+      position: "front of house, street side"
+    rear_living_room:
+      connects_to: [front_parlour, hallway, kitchen]
+      position: "behind front parlour"
+    hallway:
+      connects_to: [front_parlour, rear_living_room, stairs, front_door]
+      position: "side passage along party wall"
+    kitchen:
+      connects_to: [rear_living_room, scullery, rear_yard]
+      position: "rear extension"
+    scullery:
+      connects_to: [kitchen]
+      position: "behind kitchen"
+    front_bedroom:
+      connects_to: [landing, rear_bedroom]
+      position: "above front parlour"
+    rear_bedroom:
+      connects_to: [landing, front_bedroom]
+      position: "above rear living room"
+  structural_system:
+    primary_material: "brick (Flemish or English bond)"
+    wall_thickness:
+      external: [0.23, 0.35]   # 9in or 13.5in
+      party_wall: [0.23, 0.35]
+      internal: [0.10, 0.12]   # single brick or lath-and-plaster
+    floor: "timber joists, boards"
+    roof: "Welsh slate on timber, London stock brick stacks"
+  key_features:
+    - "Bay window in front parlour"
+    - "Side hallway running front to back"
+    - "Rear extension for kitchen (outshut)"
+    - "Cast-iron fireplace in every room"
+    - "Decorative plaster cornice in front rooms"
+    - "Tiled front path and vestibule"
+    - "Rear yard with coal shed and outside WC"
+    - "Sash windows (six-over-six or two-over-two)"
+  vertical_stacking:
+    basement: [cellar]
+    ground: [front_parlour, rear_living_room, hallway, kitchen, scullery]
+    first_floor: [front_bedroom, rear_bedroom, box_room, bathroom]
+    second_floor: [attic_bedrooms]  # in larger terraces
+    roof: [slate_on_timber]
+
+pub_tavern:
+  description: >
+    Public drinking house with multiple bars serving different social
+    classes, beer cellar below, and landlord's accommodation above.
+  period: "17th-19th century (Victorian codification)"
+  typical_footprint:
+    width: [8, 15]
+    depth: [10, 18]
+  typical_heights:
+    ground_floor: [2.7, 3.5]
+    upper_floors: [2.4, 3.0]
+    cellar: [2.2, 2.7]
+  rooms:
+    public_bar:
+      description: "Working-class bar, simple furnishing, dart board"
+      width: [4, 7]
+      length: [5, 8]
+      note: "Largest bar room; bare floorboards"
+    saloon_bar:
+      description: "Better-appointed bar for middle class, carpet, upholstery"
+      width: [4, 6]
+      length: [4, 7]
+      note: "Higher prices than public bar"
+    snug:
+      description: "Small private room with hatch to bar"
+      width: [2.5, 4]
+      length: [3, 4]
+      note: "Frosted glass window/hatch for discreet service"
+    taproom:
+      description: "Room for beer drawn from cask (older pubs)"
+      width: [3, 5]
+      length: [4, 6]
+    servery:
+      description: "Central bar counter area serving multiple rooms"
+      width: [3, 5]
+      length: [4, 8]
+      note: "Counter with beer engines; partitions radiate from here"
+    kitchen:
+      description: "Preparation area for food"
+      width: [3, 5]
+      length: [4, 6]
+    cellar:
+      description: "Below ground storage for beer barrels"
+      width: [6, 12]
+      length: [8, 15]
+      note: "Cellar flaps in pavement for delivery; cool north-facing"
+    bottle_and_jug:
+      description: "Off-sales hatch or small room for takeaway beer"
+      width: [1.5, 2.5]
+      length: [2, 3]
+    landlords_parlour:
+      description: "Private living room for publican"
+      width: [3.5, 5]
+      length: [4, 6]
+    landlords_bedrooms:
+      description: "Accommodation above the pub"
+      width: [3, 5]
+      length: [3.5, 5]
+      count: [2, 5]
+    guest_rooms:
+      description: "Letting rooms (inn function)"
+      width: [3, 4]
+      length: [3.5, 5]
+      count: [0, 6]
+    stable_yard:
+      description: "Rear yard with stabling (coaching inn)"
+      note: "Access via carriage arch"
+  adjacency:
+    public_bar:
+      connects_to: [servery, street_entrance]
+      position: "front, street level"
+    saloon_bar:
+      connects_to: [servery]
+      position: "front, separate entrance from public bar"
+    snug:
+      connects_to: [servery]
+      position: "small room off main bar, hatch service"
+    servery:
+      connects_to: [public_bar, saloon_bar, snug, cellar, kitchen]
+      position: "central, serving all bars"
+    cellar:
+      connects_to: [servery, pavement]
+      position: "below servery, beer lines up to bar"
+    kitchen:
+      connects_to: [servery, landlords_parlour]
+      position: "rear ground floor"
+    landlords_parlour:
+      connects_to: [kitchen, stairs]
+      position: "rear ground floor"
+  structural_system:
+    primary_material: "brick or stone, timber-frame (older)"
+    wall_thickness: [0.23, 0.45]
+    floor: "timber (upper), flagstone or tile (ground), stone (cellar)"
+    roof: "slate or tile"
+    cellar: "brick vault or stone flags"
+  key_features:
+    - "Multiple bars at different price points"
+    - "Central servery island or L-shaped bar"
+    - "Etched/frosted glass partitions between bars"
+    - "Cellar flaps in pavement for barrel delivery"
+    - "Beer engine (hand pump) on bar counter"
+    - "Dartboard and fireplace in public bar"
+    - "Separate street entrances for public and saloon"
+    - "Snug with frosted glass privacy"
+  vertical_stacking:
+    cellar: [beer_cellar, wine_store]
+    ground: [public_bar, saloon_bar, snug, servery, kitchen]
+    first_floor: [landlords_parlour, landlords_bedrooms, function_room]
+    second_floor: [guest_rooms, additional_bedrooms]
+
+bakery:
+  description: >
+    Commercial bakery with shop front, bake house containing
+    large masonry oven, proving room, and storage.
+  period: "Medieval to 19th century"
+  typical_footprint:
+    width: [5, 8]
+    depth: [8, 15]
+  typical_heights:
+    ground_floor: [2.7, 3.5]
+    upper_floor: [2.4, 2.7]
+  rooms:
+    shop:
+      description: "Retail space facing street"
+      width: [3.5, 6]
+      depth: [3, 5]
+    bake_house:
+      description: "Main work room containing oven and worktables"
+      width: [4, 7]
+      depth: [5, 8]
+      height: [3, 3.5]
+      note: "High ceiling for heat dissipation"
+    oven:
+      description: "Large masonry bread oven (wood-fired)"
+      width: [2, 3]          # internal
+      depth: [2.5, 4]        # internal
+      dome_height: [1, 1.5]
+      note: "Massive brick/stone construction with flue"
+    proving_room:
+      description: "Warm room for dough to rise"
+      width: [2.5, 4]
+      length: [3, 5]
+      note: "Near oven for warmth; shelves for dough baskets"
+    flour_store:
+      description: "Dry storage for flour, grain, and ingredients"
+      width: [2, 3.5]
+      length: [3, 5]
+    fuel_store:
+      description: "Storage for wood or coal"
+      width: [2, 3]
+      length: [2, 4]
+    living_quarters:
+      description: "Baker's accommodation above shop"
+      width: [5, 8]
+      depth: [6, 10]
+  adjacency:
+    shop:
+      connects_to: [bake_house, street]
+      position: "front, street-facing"
+    bake_house:
+      connects_to: [shop, oven, proving_room, flour_store]
+      position: "behind shop"
+    oven:
+      connects_to: [bake_house]
+      position: "built into back wall of bake house"
+    proving_room:
+      connects_to: [bake_house]
+      position: "adjacent to oven for warmth"
+    flour_store:
+      connects_to: [bake_house]
+      position: "near bake house, dry location"
+    fuel_store:
+      connects_to: [bake_house, oven]
+      position: "near oven, rear access for delivery"
+  structural_system:
+    primary_material: "stone or brick (fire resistance essential)"
+    wall_thickness: [0.23, 0.45]
+    oven_construction: "brick dome with stone hearth, 0.3-0.5m thick walls"
+    floor: "stone or brick (fireproof)"
+    roof: "tile or slate (not thatch - fire risk)"
+  key_features:
+    - "Massive masonry oven as centerpiece"
+    - "Large worktable for kneading"
+    - "Warm proving room near oven"
+    - "Fire-resistant construction throughout"
+    - "Early morning start (separate entrance)"
+    - "Flour store kept dry and vermin-proof"
+
+smithy:
+  description: >
+    Blacksmith's workshop centered on the forge hearth with bellows,
+    anvil, and quench trough in close proximity. Open workspace
+    for metalworking.
+  period: "Medieval to 19th century"
+  typical_footprint:
+    width: [5, 8]           # ~18ft typical
+    depth: [6, 10]          # up to 26ft for larger smithy
+  typical_heights:
+    ceiling: [3, 4.5]       # high for heat and sparks
+  rooms:
+    workspace:
+      description: "Main open floor for metalworking"
+      width: [5, 8]
+      length: [5, 8]
+      height: [3, 4.5]
+    forge_hearth:
+      description: "Raised masonry fire pit for heating metal"
+      width: [0.8, 1.2]
+      depth: [0.8, 1.0]
+      height_from_floor: [0.7, 0.9]   # waist height
+      note: "Side-draft or chimney hood above"
+    bellows:
+      description: "Air supply mechanism for forge"
+      position: "adjacent to forge, typically to the left"
+      note: "Great bellows or later fan bellows"
+    anvil:
+      description: "Iron/steel working surface on oak stump"
+      height: [0.7, 0.85]     # knuckle height of smith
+      note: "Several feet from forge for quick transfer"
+    quench_trough:
+      description: "Water trough/barrel for cooling hot metal"
+      diameter: [0.5, 0.8]    # barrel
+      note: "Beside anvil"
+    tool_rack:
+      description: "Wall storage for tongs, hammers, swages"
+      note: "Along wall near anvil and forge"
+    fuel_store:
+      description: "Coal or charcoal storage"
+      width: [1.5, 2.5]
+      depth: [1.5, 2.5]
+    shoeing_area:
+      description: "Space for horse shoeing if farrier"
+      width: [3, 4]
+      depth: [3, 4]
+      note: "Large door opening for horses"
+  adjacency:
+    forge_hearth:
+      connects_to: [workspace, bellows]
+      position: "center or against wall with chimney hood"
+    bellows:
+      connects_to: [forge_hearth]
+      position: "left side of forge"
+    anvil:
+      connects_to: [workspace]
+      position: "2-3 feet from forge, good light from door/window"
+    quench_trough:
+      connects_to: [workspace, anvil]
+      position: "beside anvil"
+    fuel_store:
+      connects_to: [forge_hearth]
+      position: "near forge, easy shoveling distance"
+  structural_system:
+    primary_material: "stone or brick (fireproof)"
+    wall_thickness: [0.3, 0.6]
+    roof: "tile or slate (not thatch)"
+    floor: "beaten earth or stone flags (spark-resistant)"
+    chimney: "large stone or brick hood over forge"
+  key_features:
+    - "Open-fronted or large double doors for ventilation and light"
+    - "Forge with chimney hood or side-draft flue"
+    - "Anvil close to forge (2-3 pace transfer)"
+    - "Quench trough beside anvil"
+    - "Bellows adjacent to forge"
+    - "Earth or stone floor (sparks)"
+    - "High ceiling for heat dissipation"
+    - "Good natural light from large openings"
+    - "Horseshoe rack if farrier"
+
+# =============================================================================
+# CIVIC / INSTITUTIONAL
+# =============================================================================
+
+town_hall:
+  description: >
+    Civic building with council chamber for governance, public hall
+    for assemblies, and offices. Often prominent market-square position.
+  period: "13th-19th century"
+  typical_footprint:
+    width: [10, 25]
+    depth: [15, 35]
+  typical_heights:
+    ground_floor: [3, 4.5]
+    council_chamber: [4, 7]  # grand proportions
+    tower: [15, 40]          # clock or bell tower
+  rooms:
+    council_chamber:
+      description: "Main debating/meeting room for council"
+      width: [8, 12]         # Tallinn 11.9 x 8.7m
+      length: [10, 16]       # Tallinn burghers hall 15.8 x 11.6m
+      height: [4, 7]         # Tallinn 6.4m vault
+    public_hall:
+      description: "Large assembly room for public gatherings"
+      width: [8, 15]
+      length: [15, 25]
+      height: [5, 8]
+    offices:
+      description: "Administrative rooms for town clerk, treasurer"
+      width: [3, 5]
+      length: [4, 7]
+      count: [2, 6]
+    archive_room:
+      description: "Secure storage for municipal documents"
+      width: [3, 5]
+      length: [4, 6]
+    court_room:
+      description: "Chamber for magistrate's court (larger towns)"
+      width: [6, 10]
+      length: [8, 14]
+    market_hall:
+      description: "Open arcade at ground floor for market stalls"
+      width: [8, 20]
+      length: [15, 30]
+      note: "Open on ground floor, closed rooms above"
+    lock_up:
+      description: "Small cells for overnight detention"
+      width: [2, 3]
+      length: [2, 3]
+      count: [1, 4]
+    tower:
+      description: "Clock tower or bell tower"
+      side: [4, 8]
+      height: [15, 40]
+  adjacency:
+    market_hall:
+      connects_to: [stairs, offices]
+      position: "ground floor, open arcade"
+    council_chamber:
+      connects_to: [offices, archive_room, stairs]
+      position: "first floor, principal room"
+    public_hall:
+      connects_to: [council_chamber, stairs]
+      position: "first floor or ground floor"
+    offices:
+      connects_to: [council_chamber, archive_room]
+      position: "near council chamber"
+    court_room:
+      connects_to: [offices, lock_up]
+      position: "ground or first floor"
+    lock_up:
+      connects_to: [court_room]
+      position: "ground floor or basement"
+  structural_system:
+    primary_material: "stone or brick"
+    wall_thickness: [0.45, 1.0]
+    floor: "stone vaults at ground, timber above"
+    roof: "timber truss with tile, slate, or lead"
+  key_features:
+    - "Prominent market square position"
+    - "Open ground-floor arcade for market"
+    - "Grand council chamber on first floor"
+    - "Clock tower or bell turret"
+    - "Municipal coat of arms on facade"
+    - "External staircase to first floor (medieval)"
+    - "Oriel window in council chamber"
+  vertical_stacking:
+    ground: [market_hall, lock_up, offices]
+    first_floor: [council_chamber, public_hall, archive_room, court_room]
+    tower: [clock_mechanism, bell_chamber]
+
+school:
+  description: >
+    Educational building with classrooms, assembly hall, and
+    administrative offices. Victorian board school pattern.
+  period: "19th century (post-1870 Education Act)"
+  typical_footprint:
+    width: [12, 25]
+    depth: [15, 40]
+  typical_heights:
+    classroom: [3.3, 4.5]    # high for ventilation
+    assembly_hall: [4.5, 6]
+  rooms:
+    classroom:
+      description: "Teaching room for 30-60 pupils"
+      width: [6, 8]
+      length: [8, 10]
+      height: [3.3, 4.5]
+      count: [2, 12]
+      note: "Ratio width:length not more than 1:1.5"
+    assembly_hall:
+      description: "Large room for school assemblies and PE"
+      width: [8, 15]
+      length: [12, 20]
+      height: [4.5, 6]
+    headmasters_office:
+      description: "Head teacher's room"
+      width: [3, 4]
+      length: [3.5, 5]
+      area: 10              # approx sq meters
+    staff_room:
+      description: "Teachers' common room"
+      width: [4, 6]
+      length: [5, 8]
+    cloakroom:
+      description: "Coat and hat storage for pupils"
+      width: [3, 5]
+      length: [5, 10]
+      count: [2, 4]         # often separate boys/girls
+    lobby:
+      description: "Entrance hall"
+      width: [3, 5]
+      length: [4, 8]
+    wc_boys:
+      description: "Boys toilets, often in separate block"
+      width: [3, 5]
+      length: [4, 6]
+    wc_girls:
+      description: "Girls toilets, separate from boys"
+      width: [3, 5]
+      length: [4, 6]
+    playground:
+      description: "Outdoor exercise space"
+      note: "Separate boys and girls yards (Victorian)"
+  adjacency:
+    lobby:
+      connects_to: [assembly_hall, classrooms, cloakroom]
+      position: "entrance"
+    assembly_hall:
+      connects_to: [lobby, classrooms]
+      position: "central or at one end"
+    classroom:
+      connects_to: [assembly_hall, corridor, cloakroom]
+      position: "arranged off corridor or around hall"
+    headmasters_office:
+      connects_to: [lobby, corridor]
+      position: "near entrance"
+    staff_room:
+      connects_to: [corridor]
+      position: "near classrooms"
+    cloakroom:
+      connects_to: [lobby, classrooms]
+      position: "between entrance and classrooms"
+  structural_system:
+    primary_material: "brick (London stock or red brick)"
+    wall_thickness: [0.35, 0.45]
+    windows: "large, high-set for light and ventilation"
+    roof: "slate on timber, often with ventilating turret"
+    floor: "timber boards (classrooms), parquet (hall)"
+  key_features:
+    - "High windows for even top-lighting"
+    - "Central hall plan or corridor plan"
+    - "Separate boys' and girls' entrances (Victorian)"
+    - "Bell turret or cupola"
+    - "Tall ceilings for ventilation"
+    - "Gallery in assembly hall"
+    - "Tiered/stepped classroom floor (optional)"
+    - "Playground with high walls"
+  vertical_stacking:
+    ground: [classrooms, assembly_hall, cloakrooms, offices, toilets]
+    first_floor: [additional_classrooms, staff_room]
+    note: "Often single-storey; larger schools 2 storeys"
+
+nightingale_hospital:
+  description: >
+    Hospital ward following Florence Nightingale's principles:
+    long narrow pavilion with beds along walls, cross-ventilation,
+    nurse station at one end.
+  period: "1860-1940s"
+  typical_footprint:
+    ward_width: [7.5, 8.5]    # 25-28ft; Nightingale spec 25ft
+    ward_length: [20, 35]      # 65-115ft; spec 80ft for 20 beds
+    pavilion_spacing: [25, 40]  # between parallel ward blocks
+  typical_heights:
+    ward: [4, 5]               # 13-16ft; spec 16ft
+  rooms:
+    ward:
+      description: "Long open room with beds along both walls"
+      width: [7.5, 8.5]       # 25-28ft
+      length: [20, 35]        # 80ft for 20 beds
+      height: [4, 5]          # 16ft ideal
+      bed_count: [20, 34]
+      bed_spacing: [2, 2.5]    # center to center
+      note: "Windows between every two beds; at least 1/3 wall area"
+    nurse_station:
+      description: "Nurse's room at entrance end of ward"
+      width: [3, 4]
+      length: [3, 5]
+      position: "entrance end, with view down entire ward"
+    sanitary_tower:
+      description: "Toilets and bathrooms at far end of ward"
+      width: [4, 6]
+      length: [3, 5]
+      note: "Separated from ward by cross-ventilated lobby"
+    scullery:
+      description: "Small kitchen for ward use"
+      width: [3, 4]
+      length: [3, 5]
+    linen_store:
+      description: "Clean linen storage"
+      width: [2, 3]
+      length: [3, 4]
+    sluice:
+      description: "Dirty utility room"
+      width: [2, 3]
+      length: [3, 4]
+    day_room:
+      description: "Convalescent sitting room (larger hospitals)"
+      width: [4, 6]
+      length: [5, 8]
+    corridor:
+      description: "Central connecting corridor between pavilions"
+      width: [2.5, 3.5]
+  adjacency:
+    nurse_station:
+      connects_to: [ward, corridor]
+      position: "entrance end of ward, commanding view"
+    ward:
+      connects_to: [nurse_station, sanitary_tower, scullery]
+      position: "main body of pavilion"
+    sanitary_tower:
+      connects_to: [ward]
+      position: "far end, separated by ventilated lobby"
+    scullery:
+      connects_to: [ward]
+      position: "near nurse station end"
+    corridor:
+      connects_to: [nurse_station]
+      position: "connecting link between pavilion wards"
+  structural_system:
+    primary_material: "brick with large windows"
+    wall_thickness: [0.35, 0.45]
+    windows: "tall sash windows, at least 1/3 of wall area"
+    floor: "polished wood or terrazzo"
+    roof: "slate on timber"
+    ventilation: "cross-ventilation essential; windows both sides"
+  key_features:
+    - "Long narrow ward for cross-ventilation"
+    - "Window between every two beds"
+    - "North-south axis preferred (both sides get sun)"
+    - "Nurse visible from all beds"
+    - "Sanitary facilities separated at far end"
+    - "Parallel pavilion arrangement with gaps between"
+    - "Fresh air and natural light as therapeutic principles"
+    - "Minimal projections for easy cleaning"
+  vertical_stacking:
+    ground: [ward, nurse_station, sanitary_tower, scullery]
+    note: "Typically single-storey pavilions; some 2-storey"
+
+prison:
+  description: >
+    Radial hub-spoke plan allowing surveillance of cell wings
+    from central point. Individual cells, exercise yards, chapel.
+    Based on Pentonville model (1842).
+  period: "1840-1900 (Victorian separate system)"
+  typical_footprint:
+    wing_length: [40, 80]
+    wing_width: [8, 12]
+    overall_diameter: [100, 200]
+  typical_heights:
+    cell: [2.7, 3.0]        # 9ft
+    wing_atrium: [10, 15]   # multi-storey void with landings
+    wall: [5, 8]            # perimeter wall
+  rooms:
+    cell:
+      description: "Individual prisoner cell"
+      width: [2.1, 2.5]     # 7ft
+      length: [3.5, 4.0]    # 13ft (Pentonville 13x7x9)
+      height: [2.7, 3.0]    # 9ft
+      note: "Small high window, iron door with spy hole"
+    landing:
+      description: "Gallery walkway outside cells"
+      width: [1.5, 2.5]
+      note: "Iron/steel gallery with railings, 3-5 levels"
+    wing:
+      description: "Cell block radiating from central hub"
+      width: [8, 12]
+      length: [40, 80]
+      stories: [3, 5]
+      cells_per_floor: [15, 30]
+    central_hall:
+      description: "Hub from which wings radiate"
+      diameter: [10, 20]
+      height: [10, 15]
+      note: "Officer at center can see down all wings"
+    chapel:
+      description: "Prison chapel with separated seating"
+      width: [8, 12]
+      length: [12, 20]
+      note: "Individual screened pews preventing prisoner contact"
+    exercise_yard:
+      description: "Outdoor exercise areas, subdivided"
+      note: "Separate yards with high dividing walls; radiating pie-slice or individual pens"
+    administration:
+      description: "Governor's office, records, reception"
+      width: [4, 6]
+      length: [5, 8]
+      count: [3, 8]
+    gate_lodge:
+      description: "Main entrance and reception"
+      width: [6, 10]
+      depth: [6, 10]
+    kitchen:
+      description: "Central kitchen"
+      width: [6, 10]
+      length: [8, 15]
+    infirmary:
+      description: "Hospital wing"
+      width: [6, 8]
+      length: [15, 25]
+    workshop:
+      description: "Labour rooms for prisoners"
+      width: [6, 10]
+      length: [10, 20]
+      count: [2, 6]
+  adjacency:
+    central_hall:
+      connects_to: [wing, chapel, administration]
+      position: "hub of radial plan"
+    wing:
+      connects_to: [central_hall]
+      position: "radiating spokes (3-6 wings)"
+    cell:
+      connects_to: [landing]
+      position: "both sides of wing"
+    chapel:
+      connects_to: [central_hall]
+      position: "separate block or above central hall"
+    exercise_yard:
+      connects_to: [wing]
+      position: "between wings"
+    administration:
+      connects_to: [gate_lodge, central_hall]
+      position: "near main entrance"
+    gate_lodge:
+      connects_to: [administration, perimeter]
+      position: "main entrance"
+  structural_system:
+    primary_material: "brick and stone"
+    wall_thickness:
+      perimeter: [0.6, 1.0]
+      cell: [0.35, 0.45]
+    floor: "stone flags (ground), iron/steel galleries (upper)"
+    roof: "slate, glazed roof over wing for light"
+    perimeter_wall_height: [5, 8]
+  key_features:
+    - "Radial hub-spoke plan for surveillance"
+    - "Individual cells (separate system)"
+    - "Iron gallery landings"
+    - "Central observation point"
+    - "High perimeter wall with corner towers"
+    - "Gate lodge with portcullis-style entrance"
+    - "Chapel with screened individual pews"
+    - "Exercise yards with dividing walls"
+    - "Clear sight lines throughout"
+  vertical_stacking:
+    ground: [cells, landing, central_hall, administration]
+    upper_floors: [cells, landing]  # 3-5 stories of cells
+    note: "Galleries stacked around central void in each wing"
+
+# =============================================================================
+# INDUSTRIAL
+# =============================================================================
+
+textile_mill:
+  description: >
+    Multi-storey factory for spinning or weaving textiles, powered
+    by water wheel or steam engine. Fireproof construction.
+    Drive shafts transmit power to each floor.
+  period: "1770-1900"
+  typical_footprint:
+    width: [10, 18]          # narrow for natural light
+    length: [30, 100]        # long production floors
+  typical_heights:
+    floor_to_floor: [3, 3.5]
+    stories: [4, 7]
+    engine_house: [6, 10]    # tall for engine
+    chimney: [30, 80]
+  rooms:
+    spinning_floor:
+      description: "Production floor with spinning frames"
+      width: [10, 18]
+      length: [30, 100]
+      column_spacing: [3, 3.6]   # fireproof columns
+      count: [2, 5]              # multiple floors
+    weaving_shed:
+      description: "Single-storey shed with north-light roof"
+      width: [30, 60]
+      length: [40, 80]
+      column_spacing: 3.6
+      note: "Often separate building; single storey due to vibration"
+    engine_house:
+      description: "Contains steam engine powering the mill"
+      width: [8, 12]
+      length: [10, 15]
+      height: [6, 10]
+    boiler_house:
+      description: "Steam boilers adjacent to engine house"
+      width: [6, 10]
+      length: [10, 20]
+    chimney:
+      description: "Tall chimney for boiler flue gases"
+      base_diameter: [3, 5]
+      height: [30, 80]
+    warehouse:
+      description: "Storage for raw materials and finished goods"
+      width: [8, 15]
+      length: [15, 40]
+      stories: [2, 4]
+    counting_house:
+      description: "Office and administration"
+      width: [5, 8]
+      length: [6, 10]
+      stories: [1, 2]
+    stair_tower:
+      description: "External or projecting stair/privy tower"
+      width: [3, 5]
+      depth: [3, 5]
+  adjacency:
+    spinning_floor:
+      connects_to: [stair_tower, engine_house]
+      position: "main block, stacked floors"
+    engine_house:
+      connects_to: [spinning_floor, boiler_house]
+      position: "attached to one end or center of main block"
+    boiler_house:
+      connects_to: [engine_house, chimney]
+      position: "adjacent to engine house"
+    warehouse:
+      connects_to: [spinning_floor]
+      position: "attached or separate building"
+    counting_house:
+      connects_to: [warehouse, spinning_floor]
+      position: "front of complex, near entrance"
+    weaving_shed:
+      connects_to: [warehouse]
+      position: "separate single-storey building"
+  structural_system:
+    primary_material: "brick external walls, cast-iron columns and beams"
+    wall_thickness: [0.45, 0.7]
+    column_material: "cast iron"
+    column_spacing: [3, 3.6]
+    beam_material: "cast iron"
+    floor: "brick jack-arch vaults between iron beams (fireproof)"
+    roof: "slate on timber or iron trusses"
+    note: "Fireproof construction after numerous mill fires"
+  key_features:
+    - "Narrow plan for natural light to all workstations"
+    - "Cast-iron frame with brick jack-arch floors"
+    - "Vertical drive shaft from engine to each floor"
+    - "Horizontal line shafts on each floor ceiling"
+    - "Leather belt drives to individual machines"
+    - "North-light sawtooth roof (weaving sheds)"
+    - "Stair/privy tower projecting from main block"
+    - "Loading doors with hoist on each floor"
+    - "Tall chimney as landmark"
+  vertical_stacking:
+    basement: [preparation_rooms]
+    ground: [spinning_floor_1, engine_house, boiler_house]
+    upper_floors: [spinning_floor_2, spinning_floor_3, spinning_floor_4]
+    top_floor: [spinning_floor_top]
+    note: "Drive shaft runs vertically through all floors"
+
+warehouse:
+  description: >
+    Commercial storage building with loading bay, large open
+    floors, and small office. Designed for goods handling and storage.
+  period: "18th-19th century"
+  typical_footprint:
+    width: [10, 20]
+    depth: [15, 40]
+  typical_heights:
+    floor_to_floor: [3, 4]
+    stories: [3, 7]
+    loading_door_height: [2.5, 3.5]
+  rooms:
+    loading_bay:
+      description: "Ground-level or dock-level receiving area"
+      width: [3, 5]          # per bay
+      height: [3, 4]
+      door_width: [2.5, 3.7]  # 8-12ft
+      count: [1, 4]
+    open_storage_floor:
+      description: "Large open floor for goods storage"
+      width: [10, 20]
+      length: [15, 40]
+      column_spacing: [3, 5]
+      count: [3, 6]          # one per storey
+    office:
+      description: "Small counting house/office"
+      width: [3, 5]
+      length: [4, 6]
+    hoist:
+      description: "Mechanical hoist for lifting goods between floors"
+      width: [2, 3]
+      depth: [2, 3]
+      note: "External hoist beam with loading doors on each floor"
+  adjacency:
+    loading_bay:
+      connects_to: [open_storage_floor, office]
+      position: "ground floor, street or quayside"
+    open_storage_floor:
+      connects_to: [loading_bay, hoist]
+      position: "stacked floors"
+    office:
+      connects_to: [loading_bay]
+      position: "ground floor near entrance"
+    hoist:
+      connects_to: [open_storage_floor]
+      position: "one end of building, all floors"
+  structural_system:
+    primary_material: "brick (load-bearing walls) or cast-iron frame"
+    wall_thickness: [0.45, 0.7]
+    floor: "heavy timber or iron beams with timber decking"
+    floor_loading: "heavy duty, designed for stored goods"
+    columns: "cast iron or timber"
+    column_spacing: [3, 5]
+    roof: "slate on timber or iron trusses"
+  key_features:
+    - "Large loading doors on each floor with hoist beam"
+    - "Minimal internal partitions for flexibility"
+    - "Heavy-duty floors for storage loads"
+    - "Hoist/crane for vertical goods movement"
+    - "Shuttered openings for ventilation"
+    - "Taking-in doors (loading doors on upper floors)"
+    - "Fireproof construction (later examples)"
+    - "Dock or street-level loading"
+  vertical_stacking:
+    ground: [loading_bay, office, storage_floor_1]
+    upper_floors: [storage_floor_2, storage_floor_3, storage_floor_4]
+    note: "External hoist serves all floors via loading doors"
+
+railway_station:
+  description: >
+    Station building with booking hall, waiting rooms, platform,
+    and train shed. Combines civic architecture with functional
+    railway infrastructure.
+  period: "1840-1910"
+  typical_footprint:
+    main_building_width: [10, 25]
+    main_building_depth: [15, 35]
+    platform_length: [50, 390]   # small halt to major terminus
+    train_shed_span: [15, 75]    # St Pancras 73m span
+  typical_heights:
+    booking_hall: [4, 6]
+    waiting_room: [3.5, 5]
+    platform_canopy: [4, 6]
+    train_shed: [10, 30]
+  rooms:
+    booking_hall:
+      description: "Main public space with ticket windows"
+      width: [8, 15]         # Sheffield Victoria 15m x 9m
+      length: [8, 15]
+      height: [4, 6]
+    ticket_office:
+      description: "Staff area behind ticket windows"
+      width: [3, 5]
+      length: [5, 10]
+      windows: [2, 7]        # ticket issuing windows
+    waiting_room_general:
+      description: "Public waiting room"
+      width: [4, 7]
+      length: [5, 10]
+    waiting_room_ladies:
+      description: "Separate ladies waiting room (Victorian convention)"
+      width: [3, 5]
+      length: [4, 7]
+    refreshment_room:
+      description: "Dining/tea room on platform"
+      width: [4, 7]
+      length: [6, 12]
+    parcels_office:
+      description: "Receiving and dispatch of parcels"
+      width: [4, 6]
+      length: [5, 10]
+    station_master_office:
+      description: "Station master's room"
+      width: [3, 5]
+      length: [4, 6]
+    platform:
+      description: "Passenger platform alongside tracks"
+      width: [3, 8]          # island platforms wider
+      length: [50, 390]
+    train_shed:
+      description: "Covered roof over tracks and platforms"
+      span: [15, 75]
+      length: [50, 200]
+    signal_box:
+      description: "Elevated cabin for controlling signals and points"
+      width: [3, 5]
+      length: [4, 8]
+    goods_shed:
+      description: "Separate building for freight handling"
+      width: [8, 15]
+      length: [15, 40]
+    toilets:
+      description: "Public lavatories"
+      width: [3, 5]
+      length: [4, 6]
+      note: "Separate gentlemen's and ladies'"
+  adjacency:
+    booking_hall:
+      connects_to: [ticket_office, waiting_room_general, platform]
+      position: "street-side entrance"
+    ticket_office:
+      connects_to: [booking_hall]
+      position: "behind counter in booking hall"
+    waiting_room_general:
+      connects_to: [booking_hall, platform]
+      position: "between booking hall and platform"
+    waiting_room_ladies:
+      connects_to: [booking_hall, platform]
+      position: "separate from general waiting room"
+    refreshment_room:
+      connects_to: [platform]
+      position: "on platform"
+    platform:
+      connects_to: [booking_hall, waiting_rooms, refreshment_room]
+      position: "alongside tracks"
+    station_master_office:
+      connects_to: [platform, booking_hall]
+      position: "with view of platform"
+    goods_shed:
+      connects_to: [goods_yard]
+      position: "separate from passenger station"
+  structural_system:
+    primary_material: "brick and stone (building), iron and glass (train shed)"
+    wall_thickness: [0.35, 0.60]
+    train_shed: "wrought-iron or steel arched trusses with glass"
+    platform: "stone or brick edging, flagstone surface"
+    canopy: "cast-iron columns with glazed roof"
+    roof_building: "slate on timber"
+  key_features:
+    - "Grand booking hall as civic space"
+    - "Iron and glass train shed over platforms"
+    - "Platform canopy with cast-iron columns"
+    - "Clock tower or prominent clock"
+    - "Separate waiting rooms by class and gender"
+    - "Refreshment room on platform"
+    - "Cab rank at street entrance"
+    - "Footbridge or subway between platforms"
+    - "Signal box with elevated view of tracks"
+  vertical_stacking:
+    ground: [booking_hall, ticket_office, waiting_rooms, platform, refreshment_room]
+    upper: [station_master_office, staff_rooms, signal_box]
+    note: "Generally single-storey platform buildings with elevated signal box"

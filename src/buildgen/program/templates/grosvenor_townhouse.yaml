@@ -1,0 +1,260 @@
+# Grosvenor Street Townhouse, London — 1763
+# Matched exactly to the original blueprint plans.
+#
+# Front elevation: 5 bays, door in bay 2 (second from left)
+# 4 floors above ground: Ground (rusticated), First (principal),
+#   Second, Third (attic with dormers) + Basement
+# Parapet hides hip roof
+#
+# Plan is nearly SQUARE: ~12m wide x ~12m deep
+# The hall/stair passage is LEFT of centre
+
+layout_type: grid
+
+footprint:
+  width: 12.0
+  width_var: 0.3
+  depth: 12.0
+  depth_var: 0.3
+  wall_thickness: 0.45
+
+grid:
+  # 4 columns matching the blueprint plan
+  # Col 0: Left rooms (dining/drawing)
+  # Col 1: Hall/stair passage
+  # Col 2: continuation of stair / small rooms
+  # Col 3: Right rooms (dressing/bedchamber)
+  columns: 4
+  col_widths: [0.30, 0.15, 0.20, 0.35]
+
+  floors:
+    # ── BASEMENT (Floor -1) ──
+    # Extensive service quarters
+    - index: -1
+      rows: [0.25, 0.25, 0.25, 0.25]
+      rooms:
+        # Front row
+        - name: Larder
+          type: pantry
+          col: 0
+          row: 0
+        - name: Area Steps
+          type: entrance_hall
+          col: 1
+          row: 0
+        - name: Ale Store
+          type: storage
+          col: 2
+          row: 0
+        - name: Wash House
+          type: scullery
+          col: 3
+          row: 0
+
+        # Second row
+        - name: Housekeeper
+          type: study
+          col: 0
+          row: 1
+        - name: Basement Passage
+          type: hallway
+          col: 1
+          row: 1
+          col_span: 2
+          is_stairwell: true
+        - name: Servants Hall
+          type: dining_room
+          col: 3
+          row: 1
+
+        # Third row
+        - name: Kitchen
+          type: kitchen
+          col: 0
+          row: 2
+          col_span: 2
+        - name: Cistern
+          type: storage
+          col: 2
+          row: 2
+        - name: Butler
+          type: study
+          col: 3
+          row: 2
+
+        # Rear row
+        - name: Laundry
+          type: scullery
+          col: 0
+          row: 3
+        - name: Wine Cellar
+          type: storage
+          col: 1
+          row: 3
+        - name: Steward
+          type: study
+          col: 2
+          row: 3
+        - name: Strong Room
+          type: storage
+          col: 3
+          row: 3
+
+    # ── GROUND FLOOR (Floor 0) ──
+    # Blueprint shows: Dining-room (left-front), Hall (centre-front),
+    # Back Parlour (left-rear), Staircase (centre-rear),
+    # Dressing Room (right, full depth)
+    - index: 0
+      rows: [0.50, 0.50]
+      rooms:
+        # Front row
+        - name: Dining Room
+          type: dining_room
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: Hall
+          type: entrance_hall
+          col: 1
+          row: 0
+          col_span: 2
+
+        - name: Dressing Room
+          type: dressing_room
+          col: 3
+          row: 0
+          row_span: 2
+
+        # Rear row
+        - name: Back Parlour
+          type: parlour
+          col: 0
+          row: 1
+          has_fireplace: true
+
+        - name: Staircase
+          type: stairwell
+          col: 1
+          row: 1
+          col_span: 2
+          is_stairwell: true
+
+    # ── FIRST FLOOR / Principal Floor (Floor 1) ──
+    # Blueprint: Drawing-room (left-front, large), Great Bedchamber (right-front)
+    # Dressing Room (left-rear), Landing+Stair (centre-rear)
+    - index: 1
+      rows: [0.55, 0.45]
+      rooms:
+        - name: Drawing Room
+          type: drawing_room
+          col: 0
+          row: 0
+          col_span: 2
+          has_fireplace: true
+
+        - name: Landing
+          type: landing
+          col: 2
+          row: 0
+
+        - name: Great Bedchamber
+          type: master_bedroom
+          col: 3
+          row: 0
+          has_fireplace: true
+
+        - name: Dressing Room
+          type: dressing_room
+          col: 0
+          row: 1
+
+        - name: Staircase
+          type: stairwell
+          col: 1
+          row: 1
+          col_span: 2
+          is_stairwell: true
+
+        - name: Closet
+          type: storage
+          col: 3
+          row: 1
+
+    # ── SECOND FLOOR (Floor 2) ──
+    # Bedrooms and dressing rooms
+    - index: 2
+      rows: [0.55, 0.45]
+      rooms:
+        - name: Bedroom 2
+          type: bedroom
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: Landing
+          type: landing
+          col: 1
+          row: 0
+          col_span: 2
+
+        - name: Bedroom 3
+          type: bedroom
+          col: 3
+          row: 0
+          has_fireplace: true
+
+        - name: Bedroom 4
+          type: bedroom
+          col: 0
+          row: 1
+
+        - name: Staircase
+          type: stairwell
+          col: 1
+          row: 1
+          col_span: 2
+          is_stairwell: true
+
+        - name: Dressing Room
+          type: dressing_room
+          col: 3
+          row: 1
+
+    # ── THIRD FLOOR / Attic (Floor 3) ──
+    # Servants quarters — dormer windows (attic space in roof)
+    - index: 3
+      rows: [0.50, 0.50]
+      rooms:
+        - name: Servants Bed 1
+          type: servants_quarters
+          col: 0
+          row: 0
+
+        - name: Servants Landing
+          type: landing
+          col: 1
+          row: 0
+          col_span: 2
+
+        - name: Servants Bed 2
+          type: servants_quarters
+          col: 3
+          row: 0
+
+        - name: Servants Bed 3
+          type: servants_quarters
+          col: 0
+          row: 1
+
+        - name: Staircase
+          type: stairwell
+          col: 1
+          row: 1
+          col_span: 2
+          is_stairwell: true
+
+        - name: Storage
+          type: storage
+          col: 3
+          row: 1

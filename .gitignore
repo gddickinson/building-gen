@@ -1,0 +1,12 @@
+/src/buildgen/engineering/__pycache__
+/src/buildgen/viz/__pycache__
+/src/buildgen/components/__pycache__
+/src/buildgen/engineering/materials/__pycache__
+/src/buildgen/geometry/__pycache__
+/src/buildgen/layout/__pycache__
+/src/buildgen/program/__pycache__
+/src/buildgen/style/__pycache__
+/tests/__pycache__
+/src/buildgen/__pycache__
+/example_floorplans
+.DS_Store

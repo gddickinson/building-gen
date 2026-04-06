@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Building Element Viewer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; overflow: hidden; }
+#canvas-container { width: 100vw; height: 100vh; position: relative; }
+canvas { display: block; }
+
+#controls {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(20, 20, 40, 0.92); padding: 15px;
+    border-radius: 10px; width: 260px; max-height: 90vh;
+    overflow-y: auto; border: 1px solid #333;
+}
+#controls h2 { font-size: 15px; margin-bottom: 10px; color: #8af; }
+#controls h3 { font-size: 12px; margin: 10px 0 5px; color: #aaa; border-bottom: 1px solid #333; padding-bottom: 3px; }
+
+.toggle { display: flex; align-items: center; margin: 4px 0; cursor: pointer; padding: 3px 5px; border-radius: 4px; }
+.toggle:hover { background: rgba(255,255,255,0.05); }
+.toggle input { margin-right: 8px; cursor: pointer; }
+.toggle label { font-size: 12px; cursor: pointer; flex: 1; }
+.toggle .count { font-size: 10px; color: #888; margin-left: 5px; }
+.toggle .swatch { width: 14px; height: 14px; border-radius: 3px; margin-right: 8px; border: 1px solid #555; }
+
+#info {
+    position: absolute; bottom: 10px; left: 10px;
+    background: rgba(20, 20, 40, 0.85); padding: 10px 15px;
+    border-radius: 8px; font-size: 12px; border: 1px solid #333;
+}
+#info span { color: #8af; }
+
+#loading {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 18px; color: #8af;
+}
+
+button {
+    background: #335; color: #ccc; border: 1px solid #556;
+    padding: 5px 10px; border-radius: 4px; cursor: pointer;
+    font-size: 11px; margin: 3px 2px;
+}
+button:hover { background: #446; color: #fff; }
+</style>
+</head>
+<body>
+
+<div id="canvas-container">
+    <div id="loading">Loading building model...</div>
+</div>
+
+<div id="controls">
+    <h2>Building Element Viewer</h2>
+
+    <h3>Quick Views</h3>
+    <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 3px;">
+        <button onclick="showAll()">All</button>
+        <button onclick="hideAll()">None</button>
+        <button onclick="exteriorOnly()">Exterior</button>
+        <button onclick="interiorOnly()">Interior</button>
+        <button onclick="structureOnly()">Structure</button>
+        <button onclick="roofOnly()">Roof</button>
+        <button onclick="servicesOnly()">Services</button>
+        <button onclick="floorCut(0)">Floor 0</button>
+        <button onclick="floorCut(1)">Floor 1</button>
+        <button onclick="floorCut(2)">Floor 2</button>
+    </div>
+    <div style="margin-bottom: 10px; display: flex; gap: 3px;">
+        <button onclick="resetCamera()">Reset View</button>
+        <button onclick="topDown()">Top Down</button>
+        <button onclick="frontView()">Front</button>
+        <button onclick="screenshot()" style="background:#354;color:#afc;">Screenshot</button>
+    </div>
+
+    <h3>Element Groups</h3>
+    <div id="group-toggles"></div>
+
+    <h3>View Options</h3>
+    <div class="toggle">
+        <input type="checkbox" id="wireframe-toggle" onchange="toggleWireframe(this.checked)">
+        <label for="wireframe-toggle">Wireframe mode</label>
+    </div>
+    <div class="toggle">
+        <input type="checkbox" id="section-toggle" onchange="toggleSection(this.checked)">
+        <label for="section-toggle">Cross-section cut</label>
+    </div>
+    <div style="margin-top: 8px;">
+        <label style="font-size: 11px;">Cut position:</label>
+        <input type="range" id="section-slider" min="0" max="100" value="50"
+               style="width: 100%;" oninput="updateSection(this.value)">
+    </div>
+</div>
+
+<div id="info">
+    <span>Controls:</span> Left-drag rotate | Right-drag pan | Scroll zoom |
+    <span id="element-count">Loading...</span>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(30, 20, 30);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(6, 7, 6);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xfff5e0, 1.0);
+dirLight.position.set(15, 20, 10);
+dirLight.castShadow = true;
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0xc0d0ff, 0.3);
+fillLight.position.set(-10, 8, -5);
+scene.add(fillLight);
+
+// Ground plane
+const groundGeo = new THREE.PlaneGeometry(50, 50);
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x4a6d3a, roughness: 0.9 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.01;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Grid helper
+const grid = new THREE.GridHelper(30, 30, 0x444444, 0x333333);
+grid.position.y = 0.01;
+scene.add(grid);
+
+// Group tracking
+const groups = {};
+let clippingPlane = null;
+
+// Section plane
+const sectionPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 5);
+renderer.clippingPlanes = [];
+
+// Load model
+const loader = new GLTFLoader();
+
+// Try to load the grouped GLB
+// Cache-bust: append timestamp to force reload of updated model
+const cacheBust = '?t=' + Date.now();
+loader.load('output/building_grouped.glb' + cacheBust,
+    function(gltf) {
+        const model = gltf.scene;
+        scene.add(model);
+
+        // Find all meshes and group them
+        // Try node name first, then parent name, then mesh name
+        model.traverse((child) => {
+            if (!child.isMesh) return;
+
+            // Try to find a meaningful name
+            let groupName = null;
+
+            // Check node name (trimesh sets this)
+            if (child.name && !child.name.startsWith('geometry_') && !child.name.startsWith('mesh_')) {
+                groupName = child.name;
+            }
+            // Check parent name
+            if (!groupName && child.parent && child.parent.name &&
+                !child.parent.name.startsWith('Scene') && !child.parent.name.startsWith('Root')) {
+                groupName = child.parent.name;
+            }
+            // Fall back to color-based grouping
+            if (!groupName) {
+                const color = child.material?.color?.getHexString() || 'unknown';
+                groupName = getGroupNameFromColor(color);
+            }
+
+            if (!groups[groupName]) groups[groupName] = [];
+            groups[groupName].push(child);
+        });
+
+        buildToggles();
+        document.getElementById('loading').style.display = 'none';
+
+        // Auto-fit camera
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        controls.target.copy(center);
+        camera.position.set(center.x + size.x, center.y + size.y * 0.8, center.z + size.z);
+
+        updateInfo();
+    },
+    function(progress) {
+        if (progress.total > 0) {
+            const pct = (progress.loaded / progress.total * 100).toFixed(0);
+            document.getElementById('loading').textContent = `Loading: ${pct}%`;
+        }
+    },
+    function(error) {
+        document.getElementById('loading').textContent =
+            'No model found. Run: python -m buildgen.viz.export_grouped';
+        console.error(error);
+    }
+);
+
+function getGroupNameFromColor(hex) {
+    const map = {
+        'be7850': 'bricks', 'aa6e4b': 'bricks', '6e3c37': 'foundation',
+        'dcd7c8': 'mortar', 'c8aa78': 'timber', 'd2b482': 'floors',
+        '505560': 'roof_covering', 'a07848': 'doors', 'b4d2f0': 'glass',
+        'f0ebe1': 'finishes',
+    };
+    return map[hex] || 'other';
+}
+
+const groupColors = {
+    ext_walls: '#BE7850', int_walls: '#D2B496', ext_basement: '#78503C',
+    chimneys: '#8C5A46', bricks: '#BE7850',
+    mortar: '#DCD7C8', timber_structure: '#C8AA78',
+    roof_structure: '#B49664', roof_covering: '#50555F', battens_strutting: '#D2B482',
+    floors: '#DCC396', floor_0: '#DCC396', floor_1: '#D7BE91', floor_2: '#D2B98C',
+    ceilings: '#EBE6DC', finishes: '#F0EBE1',
+    windows: '#A08250', glass: '#B4D2F0', doors: '#8C6441',
+    lintels: '#96734B', stairs: '#B99B6E', services: '#465A78',
+    columns_pipes: '#64646E', foundation: '#64503C', hardware: '#78787E',
+};
+
+function buildToggles() {
+    const container = document.getElementById('group-toggles');
+    container.innerHTML = '';
+
+    for (const [name, meshes] of Object.entries(groups).sort()) {
+        const count = meshes.length;
+        const color = groupColors[name] || '#AAAAAA';
+
+        const div = document.createElement('div');
+        div.className = 'toggle';
+        div.innerHTML = `
+            <div class="swatch" style="background:${color}"></div>
+            <input type="checkbox" checked id="grp-${name}"
+                   onchange="window.toggleGroup('${name}', this.checked)">
+            <label for="grp-${name}">${name.replace(/_/g, ' ')}</label>
+            <span class="count">${count}</span>
+        `;
+        container.appendChild(div);
+    }
+}
+
+window.toggleGroup = function(name, visible) {
+    if (groups[name]) {
+        groups[name].forEach(m => { m.visible = visible; });
+    }
+};
+
+window.showAll = function() {
+    for (const meshes of Object.values(groups)) {
+        meshes.forEach(m => { m.visible = true; });
+    }
+    document.querySelectorAll('#group-toggles input').forEach(cb => cb.checked = true);
+};
+
+window.hideAll = function() {
+    for (const meshes of Object.values(groups)) {
+        meshes.forEach(m => { m.visible = false; });
+    }
+    document.querySelectorAll('#group-toggles input').forEach(cb => cb.checked = false);
+};
+
+window.structureOnly = function() {
+    const show = ['ext_walls', 'int_walls', 'ext_basement', 'foundation',
+                  'timber_structure', 'lintels', 'roof_structure', 'chimneys'];
+    _setVisibility(show);
+};
+
+window.exteriorOnly = function() {
+    const show = ['ext_walls', 'ext_basement', 'roof_covering', 'windows',
+                  'glass', 'doors', 'lintels', 'chimneys', 'foundation'];
+    _setVisibility(show);
+};
+
+window.interiorOnly = function() {
+    // Hide exterior walls and roof — show everything inside
+    const hide = ['ext_walls', 'roof_covering', 'roof_structure',
+                  'battens_strutting', 'ext_basement'];
+    const show = Object.keys(groups).filter(n => !hide.includes(n));
+    _setVisibility(show);
+};
+
+window.roofOnly = function() {
+    const show = ['roof_structure', 'roof_covering', 'battens_strutting', 'chimneys'];
+    _setVisibility(show);
+};
+
+window.servicesOnly = function() {
+    const show = ['services', 'columns_pipes', 'chimneys'];
+    _setVisibility(show);
+};
+
+window.floorCut = function(floorIdx) {
+    // Show interior at a specific floor level — hide exterior walls,
+    // roof, and floors above/below
+    const show = [];
+    for (const name of Object.keys(groups)) {
+        // Always show interior walls, stairs, windows, doors, services
+        if (['int_walls', 'stairs', 'windows', 'glass', 'doors',
+             'lintels', 'services', 'chimneys', 'finishes'].includes(name)) {
+            show.push(name);
+            continue;
+        }
+        // Show the specific floor
+        if (name === `floor_${floorIdx}`) {
+            show.push(name);
+            continue;
+        }
+    }
+    _setVisibility(show);
+};
+
+function _setVisibility(showList) {
+    for (const [name, meshes] of Object.entries(groups)) {
+        const vis = showList.includes(name);
+        meshes.forEach(m => { m.visible = vis; });
+        const cb = document.getElementById(`grp-${name}`);
+        if (cb) cb.checked = vis;
+    }
+}
+
+window.resetCamera = function() {
+    camera.position.set(30, 20, 30);
+    controls.target.set(6, 7, 6);
+};
+
+window.topDown = function() {
+    camera.position.set(6, 35, 6);
+    controls.target.set(6, 0, 6);
+};
+
+window.frontView = function() {
+    camera.position.set(6, 8, -18);
+    controls.target.set(6, 7, 6);
+};
+
+window.screenshot = function() {
+    // Render one frame at high resolution
+    renderer.setSize(2400, 1800);
+    camera.aspect = 2400 / 1800;
+    camera.updateProjectionMatrix();
+    renderer.render(scene, camera);
+
+    // Capture canvas as image
+    const dataURL = renderer.domElement.toDataURL('image/png');
+
+    // Create download link
+    const link = document.createElement('a');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    link.download = `building_screenshot_${timestamp}.png`;
+    link.href = dataURL;
+    link.click();
+
+    // Restore normal size
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    // Also save to output folder via fetch (if server supports it)
+    console.log('Screenshot saved as:', link.download);
+};
+
+window.toggleWireframe = function(enabled) {
+    scene.traverse((child) => {
+        if (child.isMesh && child.material) {
+            child.material.wireframe = enabled;
+        }
+    });
+};
+
+window.toggleSection = function(enabled) {
+    if (enabled) {
+        renderer.clippingPlanes = [sectionPlane];
+    } else {
+        renderer.clippingPlanes = [];
+    }
+    renderer.localClippingEnabled = enabled;
+};
+
+window.updateSection = function(value) {
+    const t = value / 100;
+    sectionPlane.constant = t * 12;  // 0 to 12 metres (building depth)
+};
+
+function updateInfo() {
+    let total = 0;
+    for (const meshes of Object.values(groups)) {
+        total += meshes.length;
+    }
+    document.getElementById('element-count').textContent =
+        `${Object.keys(groups).length} groups, ${total} meshes`;
+}
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+}
+animate();
+
+// Handle resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

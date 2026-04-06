@@ -1,0 +1,157 @@
+# Victorian Terrace House — Reference-Based Grid Template
+#
+# The most common British house type (1840s-1910s).
+# Narrow-fronted (typically 2-bay, 4.5-6m wide), deep plan.
+# Party walls on both sides. Front door to one side with
+# side passage (hallway) running to the back.
+#
+# Key features:
+#   - Asymmetric facade: door to one side, bay window
+#   - Side hallway running front to back
+#   - Front room (parlour) and back room (living/dining)
+#   - Rear extension (outshot) for kitchen/scullery
+#   - Stairs in the hallway, typically half-landing turn
+#   - Fireplaces on party walls (shared chimney stacks)
+#   - Back yard / garden with outside WC (early types)
+#
+# Two-bay version (2-up, 2-down + rear extension):
+# Front: parlour | hallway
+# Back: living room | hallway continues
+# Extension: kitchen / scullery
+#
+# Based on typical Victorian terrace plans.
+
+layout_type: grid
+
+footprint:
+  width: 5.2        # metres (2-bay frontage, narrow)
+  width_var: 0.5
+  depth: 10.0       # metres (deep narrow plan)
+  depth_var: 0.8
+  wall_thickness: 0.25
+
+grid:
+  columns: 2
+  col_widths: [0.78, 0.22]    # Main room | side passage (hallway)
+
+  floors:
+    # ── GROUND FLOOR ──
+    # Front parlour is the best room (for guests)
+    # Back room is the everyday living room
+    # Rear extension: kitchen + scullery
+    - index: 0
+      rows: [0.38, 0.35, 0.27]    # Front room, back room, kitchen extension
+      rooms:
+        - name: front_parlour
+          type: parlour
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: hallway
+          type: entrance_hall
+          col: 1
+          row: 0
+          row_span: 2       # Hallway runs front to back
+
+        - name: back_room
+          type: dining_room
+          col: 0
+          row: 1
+          has_fireplace: true
+
+        - name: kitchen
+          type: kitchen
+          col: 0
+          row: 2
+
+        - name: scullery
+          type: scullery
+          col: 1
+          row: 2
+          optional: true
+          probability: 0.5
+
+        # Stairs in the hallway (back portion)
+        - name: staircase
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+    # ── FIRST FLOOR ──
+    # Front bedroom (largest, over the parlour)
+    # Back bedroom (over the living room)
+    # Box room or bathroom over the kitchen extension
+    - index: 1
+      rows: [0.40, 0.35, 0.25]
+      rooms:
+        - name: front_bedroom
+          type: master_bedroom
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: landing
+          type: landing
+          col: 1
+          row: 0
+
+        - name: back_bedroom
+          type: bedroom
+          col: 0
+          row: 1
+          has_fireplace: true
+
+        - name: stairwell_1
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        # Bathroom over kitchen extension
+        - name: bathroom
+          type: bathroom
+          col: 0
+          row: 2
+
+        # Box room / storage
+        - name: box_room
+          type: storage
+          col: 1
+          row: 2
+          optional: true
+          probability: 0.5
+
+    # ── SECOND FLOOR (Attic, optional) ──
+    - index: 2
+      rows: [0.55, 0.45]
+      rooms:
+        - name: attic_bedroom
+          type: bedroom
+          col: 0
+          row: 0
+          optional: true
+          probability: 0.4
+
+        - name: attic_landing
+          type: landing
+          col: 1
+          row: 0
+          optional: true
+          probability: 0.4
+
+        - name: attic_storage
+          type: storage
+          col: 0
+          row: 1
+          optional: true
+          probability: 0.3
+
+        - name: stairwell_2
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+          optional: true
+          probability: 0.4

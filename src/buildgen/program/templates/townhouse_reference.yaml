@@ -1,0 +1,188 @@
+# Georgian Townhouse — Reference-Based Grid Template
+#
+# Modelled from real Georgian floor plans. Layout uses a 3-column grid:
+# left wing | central hall | right wing
+#
+# Each floor has 2 rows (front/back). Rooms occupy grid cells.
+# Small rooms (bathroom, closet, WC) use "half" to take only
+# part of a cell, sharing space with an adjacent room.
+#
+# The "double-pile" plan: two rooms deep on each side of a central hall.
+# Front door centred on the facade. Staircase behind the entrance hall.
+# Fireplaces on the party/end walls.
+#
+# Based on real Georgian plans in example_floorplans/georgian/
+
+layout_type: grid
+
+footprint:
+  width: 8.5        # metres (3-bay frontage)
+  width_var: 0.8
+  depth: 10.5       # metres
+  depth_var: 0.8
+  wall_thickness: 0.35
+
+grid:
+  columns: 3
+  col_widths: [0.40, 0.20, 0.40]   # Hall is 20% of width (~1.7m)
+
+  floors:
+    # ── GROUND FLOOR ──
+    # Front: parlour (left) | entrance hall (centre) | dining room (right)
+    # Back: morning room / study (left) | stair (centre) | kitchen (right)
+    # WC carved from back-centre area
+    - index: 0
+      rows: [0.48, 0.52]
+      rooms:
+        # Front row
+        - name: front_parlour
+          type: parlour
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: entrance_hall
+          type: entrance_hall
+          col: 1
+          row: 0
+
+        - name: dining_room
+          type: dining_room
+          col: 2
+          row: 0
+          has_fireplace: true
+
+        # Back row
+        - name: morning_room
+          type: drawing_room
+          col: 0
+          row: 1
+          optional: true
+          probability: 0.6
+
+        - name: staircase
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        - name: kitchen
+          type: kitchen
+          col: 2
+          row: 1
+
+        # Small rooms: WC carved from bottom of hall column
+        - name: wc
+          type: wc
+          col: 1
+          row: 1
+          half: bottom
+          fraction: 0.35
+          optional: true
+          probability: 0.5
+
+    # ── FIRST FLOOR (Principal Floor) ──
+    # Front: drawing room (left) | landing (centre) | best bedroom (right)
+    # Back: study/library (left) | stair (centre) | dressing room (right)
+    - index: 1
+      rows: [0.55, 0.45]
+      rooms:
+        - name: drawing_room
+          type: drawing_room
+          col: 0
+          row: 0
+          has_fireplace: true
+
+        - name: landing_1
+          type: landing
+          col: 1
+          row: 0
+
+        - name: master_bedroom
+          type: master_bedroom
+          col: 2
+          row: 0
+          has_fireplace: true
+
+        - name: study
+          type: study
+          col: 0
+          row: 1
+          optional: true
+          probability: 0.5
+          has_fireplace: true
+
+        - name: stairwell_1
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        # Dressing room: top half of back-right cell
+        - name: dressing_room
+          type: dressing_room
+          col: 2
+          row: 1
+          half: top
+          fraction: 0.55
+          optional: true
+          probability: 0.5
+
+        # En-suite WC: bottom half of back-right cell
+        - name: ensuite
+          type: wc
+          col: 2
+          row: 1
+          half: bottom
+          fraction: 0.45
+          optional: true
+          probability: 0.4
+
+    # ── SECOND FLOOR ──
+    # Front: bedroom 2 (left) | landing (centre) | bedroom 3 (right)
+    # Back: bedroom 4 or closet (left) | stair (centre) | bathroom (right)
+    - index: 2
+      rows: [0.58, 0.42]     # Front row bigger for bedrooms
+      rooms:
+        - name: bedroom_2
+          type: bedroom
+          col: 0
+          row: 0
+
+        - name: landing_2
+          type: landing
+          col: 1
+          row: 0
+
+        - name: bedroom_3
+          type: bedroom
+          col: 2
+          row: 0
+
+        - name: bedroom_4
+          type: bedroom
+          col: 0
+          row: 1
+          optional: true
+          probability: 0.5
+
+        - name: stairwell_2
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        - name: bathroom
+          type: bathroom
+          col: 2
+          row: 1
+
+        # Closet carved from bottom of left-back if bedroom_4 not present
+        - name: closet
+          type: storage
+          col: 0
+          row: 1
+          half: right
+          fraction: 0.4
+          optional: true
+          probability: 0.4

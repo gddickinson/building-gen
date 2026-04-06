@@ -1,0 +1,105 @@
+# Medieval Tavern / Inn — Reference-Based Grid Template
+#
+# Public house with lodging, 14th-18th century.
+# Ground floor is public (drinking, dining), upper floors are lodging.
+#
+# Key features:
+#   - Large common room / tap room (public bar)
+#   - Separate snug or private parlour
+#   - Kitchen and buttery behind the bar
+#   - Cellar below for beer/wine storage
+#   - Guest bedrooms above (varying sizes)
+#   - Stable yard to the rear (not modelled here)
+#   - Wide front door, often with porch
+#   - Timber frame or stone construction
+#   - Large fireplace in common room
+#
+# Based on typical English tavern/inn plans.
+
+layout_type: grid
+
+footprint:
+  width: 10.0       # metres (wider frontage for a public building)
+  width_var: 1.5
+  depth: 9.0        # metres
+  depth_var: 1.0
+  wall_thickness: 0.40
+
+grid:
+  columns: 3
+  col_widths: [0.50, 0.12, 0.38]   # Common room | passage | service wing
+
+  floors:
+    # ── GROUND FLOOR ──
+    # Common room is the largest space (the main attraction)
+    # Passage runs front to back with staircase
+    # Kitchen and buttery behind
+    - index: 0
+      rows: [0.60, 0.40]    # Front is public, back is service
+      rooms:
+        - name: common_room
+          type: parlour
+          col: 0
+          row: 0
+          row_span: 2        # Full depth — the big room
+          has_fireplace: true
+
+        - name: entrance_passage
+          type: entrance_hall
+          col: 1
+          row: 0
+
+        - name: private_parlour
+          type: dining_room
+          col: 2
+          row: 0
+          has_fireplace: true
+
+        - name: staircase
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        - name: kitchen
+          type: kitchen
+          col: 2
+          row: 1
+
+    # ── FIRST FLOOR ──
+    # Guest rooms and landlord's quarters
+    - index: 1
+      rows: [0.50, 0.50]
+      rooms:
+        - name: best_chamber
+          type: master_bedroom
+          col: 0
+          row: 0
+
+        - name: landing
+          type: landing
+          col: 1
+          row: 0
+
+        - name: guest_room_1
+          type: bedroom
+          col: 2
+          row: 0
+
+        - name: guest_room_2
+          type: bedroom
+          col: 0
+          row: 1
+
+        - name: stairwell_1
+          type: stairwell
+          col: 1
+          row: 1
+          is_stairwell: true
+
+        - name: guest_room_3
+          type: bedroom
+          col: 2
+          row: 1
+          optional: true
+          probability: 0.6
