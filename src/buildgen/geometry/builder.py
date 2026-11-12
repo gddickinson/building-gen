@@ -46,7 +46,7 @@ class GeometryBuilder:
                     plan.footprint, floor_y, style.slab_thickness,
                     stairwell_rooms,
                 )
-                scene.add_geometry(
+                _add(scene,
                     slab, node_name=f"floor_{plan.floor_index}_slab"
                 )
 
@@ -62,7 +62,7 @@ class GeometryBuilder:
                     wall, spans, floor_y, style.floor_height, style
                 )
                 if wall_mesh:
-                    scene.add_geometry(
+                    _add(scene,
                         wall_mesh,
                         node_name=f"floor_{plan.floor_index}_wall_{wi}",
                     )
@@ -74,7 +74,7 @@ class GeometryBuilder:
                         room, floor_y, style.floor_height, style
                     )
                     if stair_mesh:
-                        scene.add_geometry(
+                        _add(scene,
                             stair_mesh,
                             node_name=f"floor_{plan.floor_index}_stairs",
                         )
@@ -87,7 +87,7 @@ class GeometryBuilder:
                 ceiling = self._build_slab(
                     top_plan.footprint, top_y, style.slab_thickness
                 )
-                scene.add_geometry(ceiling, node_name="ceiling_slab")
+                _add(scene, ceiling, node_name="ceiling_slab")
 
             # Roof
             if top_plan.footprint:
@@ -96,7 +96,7 @@ class GeometryBuilder:
                     top_plan.footprint, roof_y, style
                 )
                 if roof:
-                    scene.add_geometry(roof, node_name="roof")
+                    _add(scene, roof, node_name="roof")
 
         fp_area = 0.0
         if floor_plans and floor_plans[0].footprint:
@@ -230,3 +230,15 @@ class GeometryBuilder:
             m.fix_normals()
             m.visual.face_colors = [200, 200, 200, 255]
             return m
+
+
+def _add(scene: trimesh.Scene, mesh: trimesh.Trimesh, node_name: str) -> None:
+    """Add a mesh built in plan coordinates (x, up, plan y) to the scene in world coordinates.
+
+    Plan y (street front at 0, increasing towards the back) becomes -z, so with y up the plan keeps its
+    handedness: seen from the street, plan +x is on the right. (Using z = plan y made the 3D model a mirror
+    image of the floor plans.) Mirroring reverses winding, so faces are reversed to stay outward-facing.
+    """
+    mesh.vertices = np.column_stack([mesh.vertices[:, 0], mesh.vertices[:, 1], 0.0 - mesh.vertices[:, 2]])
+    mesh.faces = mesh.faces[:, ::-1]
+    scene.add_geometry(mesh, node_name=node_name)

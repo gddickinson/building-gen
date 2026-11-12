@@ -28,7 +28,7 @@ export function multiply(a, b) {
 export function orbitEye(cam) {
   const cp = Math.cos(cam.pitch);
   return [cam.target[0] + cam.dist * cp * Math.sin(cam.yaw), cam.target[1] + cam.dist * Math.sin(cam.pitch),
-    cam.target[2] - cam.dist * cp * Math.cos(cam.yaw)];
+    cam.target[2] + cam.dist * cp * Math.cos(cam.yaw)]; // street front faces +z
 }
 
 // Screen-space right and up vectors of the orbit camera (for panning).

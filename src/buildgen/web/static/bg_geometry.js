@@ -171,5 +171,10 @@ export function buildGeometry(plans, style) {
     nodes.push({ name: 'ceiling_slab', mesh: buildSlab(top.footprint, ty, style.slab_thickness) });
     nodes.push({ name: 'roof', mesh: buildRoofMesh(top.footprint, ty, style) });
   }
+  // builder._add: plan y -> world -z (keeps the plan's handedness), faces reversed to stay outward
+  for (const n of nodes) {
+    n.mesh.vertices = n.mesh.vertices.map(v => [v[0], v[1], 0.0 - v[2]]);
+    n.mesh.faces = n.mesh.faces.map(f => [f[2], f[1], f[0]]);
+  }
   return { nodes, num_floors: plans.length, footprint_area: plans.length ? rectArea(plans[0].footprint) : 0.0, total_floor_area: total };
 }

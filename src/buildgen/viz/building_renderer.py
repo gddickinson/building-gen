@@ -162,14 +162,15 @@ def _get_camera_transform(
     size = np.linalg.norm(bounds[1] - bounds[0])
     dist = size * 2.0
 
+    # The street front faces +z (plan y runs to -z, see geometry/builder.py)
     if angle == "front":
-        eye = center + np.array([0, size * 0.3, -dist])
+        eye = center + np.array([0, size * 0.3, dist])
     elif angle == "side":
         eye = center + np.array([dist, size * 0.3, 0])
     elif angle == "top":
         eye = center + np.array([0, dist, 0.01])
     else:  # perspective
-        eye = center + np.array([dist * 0.7, size * 0.6, -dist * 0.7])
+        eye = center + np.array([dist * 0.7, size * 0.6, dist * 0.7])
 
     return _look_at(eye, center)
 

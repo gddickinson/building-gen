@@ -36,16 +36,14 @@ route('about', async () => {
   <ul>
     <li>One style for every type: a cottage and a tavern are built with georgian proportions, brick colours and roof.</li>
     <li>The fittings placed in rooms are modern (sofas, wardrobes, fridges, washing machines, fitted bathrooms) in every period.</li>
-    <li>The 3D model is a mirror image of the floor plans: plan y becomes 3D z with y up, so seen from the street the left and
-      right sides are swapped.</li>
-    <li>In the template townhouse a small room carved from a corner of a larger one leaves the larger room at its full size, so the
-      two overlap.</li>
     <li>The building types are illustrations of a general plan type, not records of real buildings.</li>
   </ul>
   <p class="small mute">Fixed while this web version was made (each with a regression test in <code>tests/test_fixes.py</code>):
   door and window openings were only cut when Blender or manifold3d happened to be installed; floor slabs covered their stairwell
   holes; roofs always ran their ridge front to back (a pyramid on the wide cottage) and faced inward; reference-layout rooms sharing
-  a facade got no windows; <code>--list-types</code> offered the design-rules file as a building type.</p>
+  a facade got no windows; <code>--list-types</code> offered the design-rules file as a building type; rooms overlapped (carved
+  closets, halls over stairwells, shared grid cells); automatic stairwells were below the stairwell minimum; and the 3D model was a
+  mirror image of the floor plans (plan y now runs to −z, so seen from the street the plan's left is on the left).</p>
 
   <h2>Run it yourself</h2>
   <h3>Command line</h3>

@@ -97,7 +97,7 @@ def test_stairwell_hole_is_open_in_floor_slab(btype):
             if room.room_type != "stairwell":
                 continue
             cx, cz = room.centroid
-            assert not _segment_hits(slab, (cx, y - 1, cz), (cx, y + 1, cz)), f"slab covers {room.name}"
+            assert not _segment_hits(slab, (cx, y - 1, -cz), (cx, y + 1, -cz)), f"slab covers {room.name}"
             checked += 1
     assert checked
 
@@ -170,3 +170,23 @@ def test_no_two_rooms_on_a_floor_overlap(btype):
                 for b in rooms[i + 1:]:
                     ov = a.polygon.intersection(b.polygon).area
                     assert ov < 1e-6, f"{btype} seed {seed} floor {plan.floor_index}: {a.name} overlaps {b.name} by {ov:.2f} m2"
+
+
+def test_3d_model_is_not_a_mirror_image_of_the_plans():
+    # Plan (x, y) became 3D (x, z=y) with y up: seen from the street (+x to the right, as on the plan) the
+    # building came out left-right swapped. Plan y (towards the back) is now 3D -z, so the plan's handedness holds.
+    r = Pipeline().generate("townhouse_reference", "georgian", 42)
+    ground = r.floor_plans[0]
+    stair = [rm for rm in ground.rooms if rm.room_type == "stairwell"][0]
+    x0, y0, x1, y1 = stair.bounds
+    mesh = _node_meshes(r, "floor_0_stairs")["floor_0_stairs"]
+    lo, hi = mesh.bounds
+    assert x0 - 1e-6 <= lo[0] and hi[0] <= x1 + 1e-6
+    assert -y1 - 1e-6 <= lo[2] and hi[2] <= -y0 + 1e-6  # plan y -> 3D -z
+    # a back-wall window (plan y = depth) is open at 3D z = -depth
+    depth = ground.footprint.bounds[3]
+    win = [o for rm in ground.rooms for o in rm.openings
+           if o.opening_type.value == "window" and abs(o.position[1] - depth) < 1e-6][0]
+    x = win.position[0]
+    walls = list(_node_meshes(r, "floor_0_wall_").values())
+    assert not any(_segment_hits(g, (x, 1.6, -depth + 1.0), (x, 1.6, -depth - 1.0)) for g in walls)
