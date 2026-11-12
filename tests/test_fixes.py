@@ -2,6 +2,7 @@
 
 Each test failed before its fix; see SESSION_LOG.md for what changed.
 """
+import numpy as np
 import pytest
 
 from buildgen.pipeline import Pipeline
@@ -99,3 +100,39 @@ def test_stairwell_hole_is_open_in_floor_slab(btype):
             assert not _segment_hits(slab, (cx, y - 1, cz), (cx, y + 1, cz)), f"slab covers {room.name}"
             checked += 1
     assert checked
+
+
+@pytest.mark.parametrize("roof_type", ["hip", "gable"])
+def test_roof_ridge_runs_along_the_longer_side(roof_type):
+    # The ridge always ran front to back: on a building wider than deep (the cottage) the hip roof
+    # collapsed to a pyramid and the gable spanned the long way, against the docstrings.
+    from dataclasses import replace
+
+    from buildgen.geometry.roofs import build_roof_mesh
+    from buildgen.style import StyleLibrary
+    from shapely.geometry import box
+
+    style = replace(StyleLibrary().get("georgian"), roof_type=roof_type)
+    for w, d in [(9.0, 5.0), (5.0, 9.0)]:
+        roof = build_roof_mesh(box(0, 0, w, d), 6.0, style)
+        v = roof.vertices
+        ridge = v[v[:, 1] > v[:, 1].min() + 1e-6]
+        span_x = ridge[:, 0].max() - ridge[:, 0].min()
+        span_z = ridge[:, 2].max() - ridge[:, 2].min()
+        if w > d:
+            assert span_x > 1.0 and span_z < 1e-9
+        else:
+            assert span_z > 1.0 and span_x < 1e-9
+        assert (roof.face_normals[:, 1] > -1e-9).all()  # slopes face up, gable ends are vertical
+
+
+def test_flat_roof_faces_up():
+    from dataclasses import replace
+
+    from buildgen.geometry.roofs import build_roof_mesh
+    from buildgen.style import StyleLibrary
+    from shapely.geometry import box
+
+    roof = build_roof_mesh(box(0, 0, 6, 9), 6.0, replace(StyleLibrary().get("georgian"), roof_type="flat"))
+    top = roof.face_normals[np.abs(roof.face_normals[:, 1]) > 0.5]
+    assert len(top) and (top[:, 1] > 0).all()
