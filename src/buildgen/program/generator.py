@@ -31,8 +31,12 @@ class ProgramGenerator:
         self.template_dir = template_dir
 
     def available_types(self) -> list[str]:
-        """List available building type templates."""
-        return [p.stem for p in self.template_dir.glob("*.yaml")]
+        """List available building type templates.
+
+        Only YAML files that define floors (BSP templates) or a grid (reference templates) are building types;
+        other YAML files in the folder (e.g. building_type_rules.yaml, a design-rules reference) are not.
+        """
+        return [p.stem for p in self.template_dir.glob("*.yaml") if is_building_template(p)]
 
     def generate(
         self,
@@ -52,6 +56,11 @@ class ProgramGenerator:
 
         with open(template_path) as f:
             tmpl = yaml.safe_load(f)
+        if not _is_template_dict(tmpl):
+            raise ValueError(
+                f"'{building_type}' is not a building type template. "
+                f"Available: {self.available_types()}"
+            )
 
         program = BuildingProgram(
             building_type=building_type,
@@ -131,6 +140,19 @@ class ProgramGenerator:
             program.floors.append(floor)
 
         return program
+
+
+def _is_template_dict(tmpl) -> bool:
+    """True for a building template: a BSP template (has floors) or a grid template."""
+    return isinstance(tmpl, dict) and (
+        tmpl.get("layout_type") == "grid" or bool(tmpl.get("floors"))
+    )
+
+
+def is_building_template(path: Path) -> bool:
+    """True if the YAML file at path is a building type template."""
+    with open(path) as f:
+        return _is_template_dict(yaml.safe_load(f))
 
 
 def _vary(base: float, var: float, rng: random.Random) -> float:
