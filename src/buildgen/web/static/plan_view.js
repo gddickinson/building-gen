@@ -1,5 +1,6 @@
 // 2D floor plan of one storey on a canvas: rooms coloured by function, walls, doors, windows and fixtures as the
 // generator placed them. Street front (plan y = 0) at the bottom, as in buildgen's matplotlib plans.
+import { roomArea, roomRing } from './bg_util.js';
 const TYPE_COLOURS = {
   entrance_hall: '#4b5a7a', hallway: '#4b5a7a', landing: '#4b5a7a', stairwell: '#6b5a3a', parlour: '#3d6b55',
   drawing_room: '#3d6b55', dining_room: '#4d6b3a', kitchen: '#7a5a3a', scullery: '#6e5236', pantry: '#5e4a36',
@@ -23,10 +24,10 @@ export function drawPlan(canvas, plan, opts = {}) {
   const X = x => ox + (x - x0) * s, Y = y => oy - (y - y0) * s;
 
   for (const r of plan.rooms) {
-    const [a, b, c, d] = r.b;
     ctx.fillStyle = roomColour(r.room_type); ctx.globalAlpha = 0.55;
-    ctx.fillRect(X(a), Y(d), (c - a) * s, (d - b) * s);
-    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    roomRing(r).forEach(([x, y], i) => (i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))));
+    ctx.fill(); ctx.globalAlpha = 1;
   }
   if (opts.fixtures !== false) {
     ctx.strokeStyle = 'rgba(232,241,255,.55)'; ctx.lineWidth = 1;
@@ -47,14 +48,14 @@ export function drawPlan(canvas, plan, opts = {}) {
   }
   ctx.font = '11px ui-monospace, Menlo, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const r of plan.rooms) {
-    const [a, b, c, d] = r.b, cx = X((a + c) / 2), cy = Y((b + d) / 2), wpx = (c - a) * s;
+    const [a, b, c, d] = r.main || r.b, cx = X((a + c) / 2), cy = Y((b + d) / 2), wpx = (c - a) * s;
     if (wpx < 30) continue;
     ctx.fillStyle = '#e8f1ff';
     let t = label(r.name);
     while (t.length > 3 && ctx.measureText(t).width > wpx - 6) t = t.slice(0, -2) + '…';
     ctx.fillText(t, cx, cy - 6);
     ctx.fillStyle = '#94a3c6';
-    ctx.fillText(`${((c - a) * (d - b)).toFixed(1)} m²`, cx, cy + 8);
+    ctx.fillText(`${roomArea(r).toFixed(1)} m²`, cx, cy + 8);
   }
   ctx.fillStyle = '#94a3c6'; ctx.textAlign = 'left';
   ctx.fillText(`street front ↓   ${(x1 - x0).toFixed(2)} × ${(y1 - y0).toFixed(2)} m`, 8, H - 9);

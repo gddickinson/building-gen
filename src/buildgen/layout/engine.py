@@ -111,7 +111,7 @@ class LayoutEngine:
         # Place fixtures in rooms
         for room in plan.rooms:
             fixtures = place_fixtures_in_room(
-                room.bounds, room.room_type, rng
+                room.main_bounds or room.bounds, room.room_type, rng
             )
             room._fixtures = fixtures
 

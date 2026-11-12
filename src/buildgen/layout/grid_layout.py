@@ -148,6 +148,8 @@ def generate_from_grid(
             )
             rooms.append(room)
 
+        _resolve_overlaps(rooms)
+
         plan = FloorPlan(
             floor_index=floor_idx,
             rooms=rooms,
@@ -171,6 +173,45 @@ def generate_from_grid(
         floor_plans.append(plan)
 
     return floor_plans, width, depth
+
+
+def _resolve_overlaps(rooms: list[RoomPolygon], eps: float = 1e-9) -> None:
+    """Give a cell shared by two rooms to the smaller one, trimming the larger (in place).
+
+    Templates put some rooms in part of a cell that another room also fills (a WC in the bottom of the
+    staircase cell, a hallway spanning the staircase's row, a closet in half a bedroom). The smaller room
+    must cover a whole side of the larger one; the larger keeps the rest of its rectangle.
+    """
+    for _ in range(len(rooms)):
+        changed = False
+        for i, a in enumerate(rooms):
+            for b in rooms[i + 1:]:
+                ab, bb = a.bounds, b.bounds
+                if min(ab[2], bb[2]) - max(ab[0], bb[0]) <= eps or min(ab[3], bb[3]) - max(ab[1], bb[1]) <= eps:
+                    continue
+                big, small = (a, b) if a.area >= b.area else (b, a)
+                g, m = list(big.bounds), small.bounds
+                if m[0] <= g[0] + eps and m[2] >= g[2] - eps:      # small spans big's width
+                    if m[3] >= g[3] - eps:
+                        g[3] = m[1]
+                    elif m[1] <= g[1] + eps:
+                        g[1] = m[3]
+                    else:
+                        continue
+                elif m[1] <= g[1] + eps and m[3] >= g[3] - eps:    # small spans big's depth
+                    if m[2] >= g[2] - eps:
+                        g[2] = m[0]
+                    elif m[0] <= g[0] + eps:
+                        g[0] = m[2]
+                    else:
+                        continue
+                else:
+                    continue
+                if g[2] - g[0] > eps and g[3] - g[1] > eps:
+                    big.polygon = box(*g)
+                    changed = True
+        if not changed:
+            return
 
 
 def _extract_walls(plan: FloorPlan, thickness: float) -> list[WallSegment]:

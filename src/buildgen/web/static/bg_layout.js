@@ -1,7 +1,7 @@
 // Stage 2 for template (BSP) types: port of buildgen/layout/engine.py (LayoutEngine). Rooms are boxes b =
 // [minx, miny, maxx, maxy] in plan metres (y = 0 is the street front).
 import { PyRandom } from './py_random.js';
-import { boxRing, boundaryDist, interpolate, pyInt, pyRound, segLength, segSegDist } from './bg_util.js';
+import { boundaryDist, interpolate, pyInt, pyRound, roomRing, segLength, segSegDist } from './bg_util.js';
 import { subdivideFloor, room } from './bg_subdivide.js';
 import { placeFixturesInRoom } from './bg_fixtures.js';
 
@@ -32,7 +32,7 @@ function generateFloor(fp, fb, stair, program, rng) {
   plan.walls = extractWalls(plan, program.wall_thickness);
   placeDoors(plan, fp);
   placeWindows(plan, fp);
-  for (const r of plan.rooms) r.fixtures = placeFixturesInRoom(r.b, r.room_type, rng);
+  for (const r of plan.rooms) r.fixtures = placeFixturesInRoom(r.main || r.b, r.room_type, rng);
   return plan;
 }
 
@@ -42,7 +42,7 @@ const edgesMatch = (s1, e1, s2, e2, tol = 0.05) => (close(s1, s2, tol) && close(
 function extractWalls(plan, thickness) {
   const walls = [];
   for (const r of plan.rooms) {
-    const c = boxRing(r.b);
+    const c = roomRing(r);
     for (let i = 0; i < c.length - 1; i++) {
       const s = [pyRound(c[i][0], 4), pyRound(c[i][1], 4)], e = [pyRound(c[i + 1][0], 4), pyRound(c[i + 1][1], 4)];
       const ext = segLength(s, e) > 0.01 && boundaryDist(plan.footprint, s, e) < 0.01;
@@ -54,7 +54,7 @@ function extractWalls(plan, thickness) {
 }
 
 function findSharedEdge(a, b, tol = 0.05) {
-  const ca = boxRing(a.b), cb = boxRing(b.b);
+  const ca = roomRing(a), cb = roomRing(b);
   for (let i = 0; i < ca.length - 1; i++) for (let j = 0; j < cb.length - 1; j++)
     if (edgesMatch(ca[i], ca[i + 1], cb[j], cb[j + 1], tol)) return [ca[i], ca[i + 1]];
   for (let i = 0; i < ca.length - 1; i++) for (let j = 0; j < cb.length - 1; j++)
@@ -89,7 +89,7 @@ function placeWindows(plan, fp) {
   for (const r of plan.rooms) {
     const spec = fp.rooms.find(s => s.name === r.name);
     if (spec && !spec.needs_window) continue;
-    const c = boxRing(r.b);
+    const c = roomRing(r);
     for (let i = 0; i < c.length - 1; i++) {
       const len = segLength(c[i], c[i + 1]);
       if (len < 1.0 || boundaryDist(plan.footprint, c[i], c[i + 1]) > 0.01) continue;

@@ -1,6 +1,6 @@
 // Stage 3: port of buildgen/geometry (walls.py, slabs.py, roofs.py and GeometryBuilder.build in builder.py).
 // Output is a list of scene nodes {name, mesh} in the order trimesh's Scene receives them, plus the stats Building3D has.
-import { boxRing, pySum, rectArea } from './bg_util.js';
+import { boxRing, pySum, rectArea, roomArea } from './bg_util.js';
 import { concat, fixNormals, makeBox, mesh } from './bg_mesh.js';
 import { buildStairMesh } from './bg_stairs.js';
 
@@ -152,7 +152,7 @@ export function buildGeometry(plans, style) {
   let total = 0.0;
   for (const plan of plans) {
     const fy = plan.floor_index * style.floor_height;
-    total += pySum(plan.rooms.map(r => rectArea(r.b)));
+    total += pySum(plan.rooms.map(roomArea));
     nodes.push({ name: `floor_${plan.floor_index}_slab`, mesh: slabWithOpenings(plan.footprint, fy, style.slab_thickness, plan.rooms.filter(r => r.room_type === 'stairwell')) });
     const openings = plan.rooms.flatMap(r => r.openings);
     plan.walls.forEach((w, wi) => {

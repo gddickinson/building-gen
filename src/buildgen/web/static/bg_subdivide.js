@@ -1,6 +1,6 @@
 // Port of buildgen/layout/subdivide.py: the Georgian-style split of a footprint into a central hall column and
 // left/right wings, rooms stacked front to back, small rooms carved from corners of the largest rooms.
-import { rectArea, pySum } from './bg_util.js';
+import { rectArea, ringArea, pySum } from './bg_util.js';
 
 const FRONT = new Set(['entrance_hall', 'parlour', 'drawing_room', 'shop_floor']);
 const REAR = new Set(['kitchen', 'scullery', 'pantry']);
@@ -37,10 +37,9 @@ export function subdivideFloor(fb, rooms, stair, rng) {
   if (circulation.length) {
     const c = circulation[0];
     let depth;
-    if (stair) {
-      depth = Math.min(stair[3] + 0.5, maxy) - miny;
+    if (stair) { // hall runs from the front to the foot of the stairwell
       const maxDepth = (hx2 - hx1) > 0 ? (c.max_area * 1.3) / (hx2 - hx1) : fd;
-      depth = Math.max(2.0, Math.min(depth, maxDepth));
+      depth = Math.min(stair[1] - miny, maxDepth);
     } else {
       depth = Math.max(2.0, Math.min(fd * 0.4, c.max_area / (hx2 - hx1)));
     }
@@ -108,23 +107,31 @@ function subdivideColumn(minx, miny, maxx, maxy, rooms, rng) {
   return out;
 }
 
-// host.polygon.difference(small box): area and bounds of what is left (both are axis-aligned boxes).
-function remainder(h, s) {
-  const ox0 = Math.max(h[0], s[0]), oy0 = Math.max(h[1], s[1]), ox1 = Math.min(h[2], s[2]), oy1 = Math.min(h[3], s[3]);
-  if (ox1 <= ox0 || oy1 <= oy0) return { area: rectArea(h), b: h };
-  const area = rectArea(h) - (ox1 - ox0) * (oy1 - oy0);
-  const fullX = ox0 <= h[0] && ox1 >= h[2], fullY = oy0 <= h[1] && oy1 >= h[3];
-  if (fullX && fullY) return { area: 0, b: null };
-  let b = h;
-  if (fullX) b = oy0 <= h[1] ? [h[0], oy1, h[2], h[3]] : oy1 >= h[3] ? [h[0], h[1], h[2], oy0] : h;
-  else if (fullY) b = ox0 <= h[0] ? [ox1, h[1], h[2], h[3]] : ox1 >= h[2] ? [h[0], h[1], ox0, h[3]] : h;
-  return { area, b };
+// layout/subdivide.py _l_shape: host box minus a corner box, ring in shapely.box order with the corner replaced
+// by the notch; main = the larger rectangular part.
+function lShape(hb, sb, corner) {
+  const [x0, y0, x1, y1] = hb;
+  const ring = { br: [x1, y0], tr: [x1, y1], tl: [x0, y1], bl: [x0, y0] }, order = ['br', 'tr', 'tl', 'bl'];
+  const inner = { tr: [sb[0], sb[1]], tl: [sb[2], sb[1]], br: [sb[0], sb[3]], bl: [sb[2], sb[3]] }[corner];
+  const coords = [];
+  order.forEach((k, i) => {
+    const c = ring[k];
+    if (k !== corner) { coords.push(c); return; }
+    const p = ring[order[(i + 3) % 4]], n = ring[order[(i + 1) % 4]];
+    coords.push(p[0] === c[0] ? [c[0], inner[1]] : [inner[0], c[1]], inner, n[0] === c[0] ? [c[0], inner[1]] : [inner[0], c[1]]);
+  });
+  coords.push(coords[0]);
+  const sw = sb[2] - sb[0], sh = sb[3] - sb[1];
+  const bw = corner === 'tr' || corner === 'tl' ? [x0, y0, x1, y1 - sh] : [x0, y0 + sh, x1, y1];
+  const bh = corner === 'tr' || corner === 'br' ? [x0, y0, x1 - sw, y1] : [x0 + sw, y0, x1, y1];
+  return { ring: coords, main: rectArea(bw) >= rectArea(bh) ? bw : bh };
 }
 
 function carveSmallRoom(existing, spec, rng) {
   if (!existing.length) return existing;
-  let cands = existing.filter(r => rectArea(r.b) > spec.target_area * 2);
-  if (!cands.length) cands = existing.filter(r => rectArea(r.b) > spec.min_area * 1.5);
+  const rects = existing.filter(r => !r.ring);
+  let cands = rects.filter(r => rectArea(r.b) > spec.target_area * 2);
+  if (!cands.length) cands = rects.filter(r => rectArea(r.b) > spec.min_area * 1.5);
   if (!cands.length) return existing;
   let host = cands[0];
   for (const c of cands) if (rectArea(c.b) > rectArea(host.b)) host = c;
@@ -141,10 +148,13 @@ function carveSmallRoom(existing, spec, rng) {
   else if (corner === 'tl') sb = [hb[0], hb[3] - sh, hb[0] + sw, hb[3]];
   else if (corner === 'br') sb = [hb[2] - sw, hb[1], hb[2], hb[1] + sh];
   else sb = [hb[0], hb[1], hb[0] + sw, hb[1] + sh];
-  const rem = remainder(hb, sb);
-  if (!rem.b || rem.area < spec.min_area) return existing;
+  if (sw >= hw || sh >= hh) return existing;
+  const L = lShape(hb, sb, corner);
+  if (ringArea(L.ring) < spec.min_area) return existing;
   const out = existing.filter(r => r !== host);
-  out.push(room(host.name, host.room_type, rem.b, host.floor));
+  const h = room(host.name, host.room_type, hb, host.floor);
+  h.ring = L.ring; h.main = L.main;
+  out.push(h);
   out.push(room(spec.name, spec.room_type, sb, spec.floor));
   return out;
 }

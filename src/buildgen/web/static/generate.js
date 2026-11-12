@@ -5,6 +5,7 @@ import { loadData, generate, stats, typeLabel, sha256, nodePart, nodeFloor } fro
 import { createViewer } from './gl_view.js';
 import { drawPlan } from './plan_view.js';
 import { exportGlb } from './bg_glb.js';
+import { roomArea } from './bg_util.js';
 
 const SLIDERS = [['roof_pitch', 'Roof pitch (rise/run)', 0.05], ['roof_overhang', 'Roof overhang', 0.05, ' m'],
   ['floor_height', 'Floor height', 0.1, ' m'], ['slab_thickness', 'Slab thickness', 0.05, ' m'], ['stair_riser', 'Stair riser', 0.01, ' m']];
@@ -105,7 +106,7 @@ route('generate', async (args, query) => {
     const plan = building.plans.find(p => p.floor_index === planFloor);
     drawPlan($('#g-plan'), plan);
     $('#g-rooms').innerHTML = `<tr><th>Room</th><th>Type</th><th>Size (m)</th><th>Area</th><th>Doors</th><th>Windows</th></tr>` + list(plan.rooms, r =>
-      `<tr><td>${esc(r.name)}</td><td>${esc(r.room_type)}</td><td>${(r.b[2] - r.b[0]).toFixed(2)} × ${(r.b[3] - r.b[1]).toFixed(2)}</td><td>${((r.b[2] - r.b[0]) * (r.b[3] - r.b[1])).toFixed(1)} m²</td>
+      `<tr><td>${esc(r.name)}</td><td>${esc(r.room_type)}</td><td>${(r.b[2] - r.b[0]).toFixed(2)} × ${(r.b[3] - r.b[1]).toFixed(2)}</td><td>${roomArea(r).toFixed(1)} m²${r.ring ? ' (L-shaped)' : ''}</td>
       <td>${r.openings.filter(o => o.type !== 'window').length}</td><td>${r.openings.filter(o => o.type === 'window').length}</td></tr>`);
   }
 

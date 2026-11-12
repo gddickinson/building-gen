@@ -156,3 +156,17 @@ def test_grid_rooms_on_the_outside_get_windows(btype):
                 if any(outside):
                     wins = [o for o in room.openings if o.opening_type.value == "window"]
                     assert wins, f"{btype} seed {seed} floor {plan.floor_index}: {room.name} has no window"
+
+
+@pytest.mark.parametrize("btype", ["townhouse", "townhouse_reference", "grosvenor_townhouse", "victorian_terrace", "cottage", "tavern"])
+def test_no_two_rooms_on_a_floor_overlap(btype):
+    # In the template townhouse a small room carved from a corner of a larger one left the larger room at its
+    # full size, and the entrance hall / landing ran over the stairwell.
+    for seed in range(10):
+        r = Pipeline().generate(btype, "georgian", seed)
+        for plan in r.floor_plans:
+            rooms = plan.rooms
+            for i, a in enumerate(rooms):
+                for b in rooms[i + 1:]:
+                    ov = a.polygon.intersection(b.polygon).area
+                    assert ov < 1e-6, f"{btype} seed {seed} floor {plan.floor_index}: {a.name} overlaps {b.name} by {ov:.2f} m2"

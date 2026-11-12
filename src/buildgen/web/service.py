@@ -124,6 +124,7 @@ def describe(result: PipelineResult) -> dict:
         for r in fp.rooms:
             rooms.append({
                 "name": r.name, "type": r.room_type, "bounds": list(r.bounds),
+                "ring": [list(c) for c in r.polygon.exterior.coords],
                 "openings": [{"type": o.opening_type.value, "position": list(o.position), "width": o.width}
                              for o in r.openings],
                 "fixtures": [{"type": fx.fixture_type.value, "x": fx.x, "y": fx.y, "width": fx.width,

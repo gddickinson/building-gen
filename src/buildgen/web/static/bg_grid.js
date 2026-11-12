@@ -1,7 +1,7 @@
 // Stage 2 for reference (grid) types: port of buildgen/layout/grid_layout.py (generate_from_grid). Each room takes
 // a cell (or part of one, or a span of cells) of a rows x columns grid scaled to a varied footprint.
 import { PyRandom } from './py_random.js';
-import { boxRing, boundaryDist, bufferedOverlapArea, interpolate, pyInt, pyRound, pySum, segLength, segSegDist } from './bg_util.js';
+import { boxRing, rectArea, boundaryDist, bufferedOverlapArea, interpolate, pyInt, pyRound, pySum, segLength, segSegDist } from './bg_util.js';
 import { room } from './bg_subdivide.js';
 import { opening, roomByName } from './bg_layout.js';
 import { placeFixturesInRoom } from './bg_fixtures.js';
@@ -56,6 +56,7 @@ export function generateFromGrid(tmpl, seed = 0) {
       if (rs > 1 && row + rs - 1 < rows.length) y2 = rows[row + rs - 1][1];
       rooms.push(room(rd.name, g(rd, 'type', 'generic'), [x1, y1, x2, y2], idx));
     }
+    resolveOverlaps(rooms);
     const plan = { floor_index: idx, rooms, footprint: fb };
     plan.walls = extractWalls(plan, wallT);
     placeDoors(plan);
@@ -64,6 +65,26 @@ export function generateFromGrid(tmpl, seed = 0) {
     plans.push(plan);
   }
   return { plans, width, depth };
+}
+
+// grid_layout._resolve_overlaps: a cell shared by two rooms goes to the smaller one; the larger is trimmed.
+function resolveOverlaps(rooms, eps = 1e-9) {
+  for (let it = 0; it < rooms.length; it++) {
+    let changed = false;
+    for (let i = 0; i < rooms.length; i++) for (let j = i + 1; j < rooms.length; j++) {
+      const a = rooms[i], b = rooms[j], ab = a.b, bb = b.b;
+      if (Math.min(ab[2], bb[2]) - Math.max(ab[0], bb[0]) <= eps || Math.min(ab[3], bb[3]) - Math.max(ab[1], bb[1]) <= eps) continue;
+      const [big, small] = rectArea(a.b) >= rectArea(b.b) ? [a, b] : [b, a];
+      const g = big.b.slice(), m = small.b;
+      if (m[0] <= g[0] + eps && m[2] >= g[2] - eps) {
+        if (m[3] >= g[3] - eps) g[3] = m[1]; else if (m[1] <= g[1] + eps) g[1] = m[3]; else continue;
+      } else if (m[1] <= g[1] + eps && m[3] >= g[3] - eps) {
+        if (m[2] >= g[2] - eps) g[2] = m[0]; else if (m[0] <= g[0] + eps) g[0] = m[2]; else continue;
+      } else continue;
+      if (g[2] - g[0] > eps && g[3] - g[1] > eps) { big.b = g; changed = true; }
+    }
+    if (!changed) return;
+  }
 }
 
 function extractWalls(plan, thickness) {

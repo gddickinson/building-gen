@@ -61,6 +61,8 @@ class RoomPolygon:
     polygon: Polygon
     floor: int = 0
     openings: list[Opening] = field(default_factory=list)
+    # For an L-shaped room (a corner carved off for a small room): its larger rectangular part.
+    main_bounds: tuple[float, float, float, float] | None = None
 
     @property
     def area(self) -> float:

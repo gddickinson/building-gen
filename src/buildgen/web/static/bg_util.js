@@ -32,6 +32,18 @@ export const pyInt = x => Math.trunc(x);
 export const boxRing = b => [[b[2], b[1]], [b[2], b[3]], [b[0], b[3]], [b[0], b[1]], [b[2], b[1]]];
 export const rectArea = b => (b[2] - b[0]) * (b[3] - b[1]); // GEOS ring area of a box, bit for bit
 
+// GEOS Area::ofRing (closed ring), as shapely's Polygon.area for a polygon without holes.
+export function ringArea(r) {
+  if (r.length < 3) return 0;
+  const x0 = r[0][0];
+  let sum = 0.0;
+  for (let i = 1; i < r.length - 1; i++) sum += (r[i][0] - x0) * (r[i - 1][1] - r[i + 1][1]);
+  return Math.abs(sum / 2.0);
+}
+// A room's outline: its own ring if L-shaped, else its box.
+export const roomRing = r => r.ring || boxRing(r.b);
+export const roomArea = r => (r.ring ? ringArea(r.ring) : rectArea(r.b));
+
 export const segLength = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1]; return Math.sqrt(dx * dx + dy * dy); };
 
 // GEOS Distance::pointToSegment

@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { generateBuilding, meshCounts } from './bg_pipeline.js';
 import { exportGlb } from './bg_glb.js';
 import { PyRandom } from './py_random.js';
+import { roomRing } from './bg_util.js';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const fx = JSON.parse(readFileSync(here + '../../../../tests/fixtures/building_fixture.json', 'utf8'));
@@ -33,6 +34,8 @@ for (const c of fx.cases) {
     p.rooms.forEach((r, k) => {
       const s = q.rooms[k];
       if (s.name !== r.name || s.room_type !== r.type || !r.bounds.every((v, j) => close(v, s.b[j]))) fail(`${id} floor ${p.floor} room ${r.name}`);
+      const ring = roomRing(s);
+      if (ring.length !== r.ring.length || !r.ring.every((c, j) => close(c[0], ring[j][0]) && close(c[1], ring[j][1]))) fail(`${id} floor ${p.floor} room ${r.name} outline`);
       if (s.openings.length !== r.openings.length || !r.openings.every((o, j) => o.type === s.openings[j].type && close(o.position[0], s.openings[j].position[0]) && close(o.position[1], s.openings[j].position[1]))) fail(`${id} ${r.name} openings`);
       if (s.fixtures.length !== r.fixtures.length || !r.fixtures.every((o, j) => o.type === s.fixtures[j].type && close(o.x, s.fixtures[j].x) && close(o.y, s.fixtures[j].y))) fail(`${id} ${r.name} fixtures`);
     });

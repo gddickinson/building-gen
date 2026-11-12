@@ -103,13 +103,12 @@ def subdivide_floor(
         circ_room = circulation[0]
         # Hall depth: from front wall to just past the stairwell
         if stairwell_rect:
-            # Hall runs from front to just past the stairwell
-            hall_depth = min(sy2 + 0.5, maxy) - miny
-            # But cap at a reasonable size
+            # Hall runs from the front to the foot of the stairwell, which
+            # sits behind it in the same column (it used to run on past the
+            # stairwell, so the hall and stairwell overlapped)
             max_hall_area = circ_room.max_area * 1.3
             max_hall_depth = max_hall_area / (hall_x2 - hall_x1) if (hall_x2 - hall_x1) > 0 else fd
-            hall_depth = min(hall_depth, max_hall_depth)
-            hall_depth = max(2.0, hall_depth)
+            hall_depth = min(sy1 - miny, max_hall_depth)
         else:
             hall_depth = min(fd * 0.4, circ_room.max_area / (hall_x2 - hall_x1))
             hall_depth = max(2.0, hall_depth)
@@ -283,14 +282,20 @@ def _carve_small_room(
     small_spec: RoomSpec,
     rng: random.Random,
 ) -> list[RoomPolygon]:
-    """Carve a small room out of the corner of the largest existing room."""
+    """Carve a small room out of a corner of the largest rectangular room.
+
+    The host keeps the rest of its rectangle as an L-shaped room (it used to
+    keep its full rectangle, overlapping the small room); its main_bounds is
+    the larger rectangular part, used for placing fittings. Rooms that are
+    already L-shaped are not carved again.
+    """
     if not existing:
         return existing
 
-    # Find the largest room that isn't itself small
-    candidates = [r for r in existing if r.area > small_spec.target_area * 2]
+    rects = [r for r in existing if len(r.polygon.exterior.coords) == 5]
+    candidates = [r for r in rects if r.area > small_spec.target_area * 2]
     if not candidates:
-        candidates = [r for r in existing if r.area > small_spec.min_area * 1.5]
+        candidates = [r for r in rects if r.area > small_spec.min_area * 1.5]
     if not candidates:
         return existing
 
@@ -300,16 +305,14 @@ def _carve_small_room(
     hw = hb[2] - hb[0]
     hh = hb[3] - hb[1]
 
-    # Carve from a corner — prefer rear-right corner
-    target_area = small_spec.target_area
     # Try to make it roughly square-ish
+    target_area = small_spec.target_area
     small_w = min(hw * 0.35, max(1.0, (target_area ** 0.5)))
     small_h = target_area / small_w if small_w > 0 else 1.5
     small_h = min(small_h, hh * 0.45)
     small_w = max(0.8, small_w)
     small_h = max(0.8, small_h)
 
-    # Position: rear-right corner of host room
     corner = rng.choice(["tr", "tl", "br", "bl"])
     if corner == "tr":
         sx1, sy1 = hb[2] - small_w, hb[3] - small_h
@@ -324,25 +327,18 @@ def _carve_small_room(
         sx1, sy1 = hb[0], hb[1]
         sx2, sy2 = hb[0] + small_w, hb[1] + small_h
 
-    small_poly = box(sx1, sy1, sx2, sy2)
+    if small_w >= hw or small_h >= hh:
+        return existing  # the small room would take a whole side of the host
 
-    # Shrink the host room by subtracting the small room
-    # For simplicity, create an L-shape or just reduce the host
-    host_remainder = host.polygon.difference(small_poly)
-    if host_remainder.is_empty or host_remainder.area < small_spec.min_area:
+    small_poly = box(sx1, sy1, sx2, sy2)
+    host_poly, main = _l_shape(hb, (sx1, sy1, sx2, sy2), corner)
+    if host_poly.area < small_spec.min_area:
         return existing
 
-    # Replace host with reduced version
     new_existing = [r for r in existing if r is not host]
-
-    # Use bounding box of remainder (simplify L-shapes to rectangles)
-    # The host keeps the larger portion
-    rb = host_remainder.bounds
-    host_new_poly = box(rb[0], rb[1], rb[2], rb[3])
-
     new_existing.append(RoomPolygon(
         name=host.name, room_type=host.room_type,
-        polygon=host_new_poly, floor=host.floor,
+        polygon=host_poly, floor=host.floor, main_bounds=main,
     ))
     new_existing.append(RoomPolygon(
         name=small_spec.name,
@@ -352,3 +348,32 @@ def _carve_small_room(
     ))
 
     return new_existing
+
+
+def _l_shape(hb: tuple, sb: tuple, corner: str) -> tuple[Polygon, tuple]:
+    """The host box hb minus the corner box sb: (L-shaped polygon, its larger rectangular part).
+
+    The ring follows shapely.box's order (counter-clockwise from (maxx, miny)) with the cut corner
+    replaced by the three corners of the notch.
+    """
+    x0, y0, x1, y1 = hb
+    ring = {"br": (x1, y0), "tr": (x1, y1), "tl": (x0, y1), "bl": (x0, y0)}
+    order = ["br", "tr", "tl", "bl"]
+    inner = {"tr": (sb[0], sb[1]), "tl": (sb[2], sb[1]), "br": (sb[0], sb[3]), "bl": (sb[2], sb[3])}[corner]
+    coords = []
+    for i, k in enumerate(order):
+        c = ring[k]
+        if k != corner:
+            coords.append(c)
+            continue
+        p, n = ring[order[i - 1]], ring[order[(i + 1) % 4]]
+        a = (c[0], inner[1]) if p[0] == c[0] else (inner[0], c[1])
+        d = (c[0], inner[1]) if n[0] == c[0] else (inner[0], c[1])
+        coords.extend([a, inner, d])
+    sw, sh = sb[2] - sb[0], sb[3] - sb[1]
+    # Larger rectangle of the L: the full-width band or the full-height band beside the notch
+    band_w = (x0, y0, x1, y1 - sh) if corner in ("tr", "tl") else (x0, y0 + sh, x1, y1)
+    band_h = (x0, y0, x1 - sw, y1) if corner in ("tr", "br") else (x0 + sw, y0, x1, y1)
+    area = lambda b: (b[2] - b[0]) * (b[3] - b[1])
+    main = band_w if area(band_w) >= area(band_h) else band_h
+    return Polygon(coords), main
