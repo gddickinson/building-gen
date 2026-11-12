@@ -9,7 +9,7 @@ from shapely.geometry import Polygon
 from ..layout.models import FloorPlan, OpeningType, RoomPolygon, WallSegment, WallType
 from ..style.models import StyleParams
 from .models import Building3D
-from .walls import build_wall_mesh, cut_opening_in_wall
+from .walls import build_wall_with_openings, opening_span
 from .roofs import build_roof_mesh
 from .stairs import build_stair_mesh
 
@@ -49,20 +49,18 @@ class GeometryBuilder:
                     slab, node_name=f"floor_{plan.floor_index}_slab"
                 )
 
-            # Walls
+            # Walls, with every door and window on this floor that lies on them left open
+            openings = [o for room in plan.rooms for o in room.openings]
             for wi, wall in enumerate(plan.walls):
-                wall_mesh = build_wall_mesh(
-                    wall, floor_y, style.floor_height, style
+                spans = []
+                for opening in openings:
+                    span = opening_span(wall, opening, floor_y, style.floor_height)
+                    if span is not None:
+                        spans.append(span)
+                wall_mesh = build_wall_with_openings(
+                    wall, spans, floor_y, style.floor_height, style
                 )
                 if wall_mesh:
-                    # Cut openings in this wall
-                    for room in plan.rooms:
-                        for opening in room.openings:
-                            wall_mesh = cut_opening_in_wall(
-                                wall_mesh, wall, opening,
-                                floor_y, style
-                            )
-
                     scene.add_geometry(
                         wall_mesh,
                         node_name=f"floor_{plan.floor_index}_wall_{wi}",
