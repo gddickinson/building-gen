@@ -136,3 +136,23 @@ def test_flat_roof_faces_up():
     roof = build_roof_mesh(box(0, 0, 6, 9), 6.0, replace(StyleLibrary().get("georgian"), roof_type="flat"))
     top = roof.face_normals[np.abs(roof.face_normals[:, 1]) > 0.5]
     assert len(top) and (top[:, 1] > 0).all()
+
+
+@pytest.mark.parametrize("btype", ["cottage", "tavern", "victorian_terrace", "townhouse_reference", "grosvenor_townhouse"])
+def test_grid_rooms_on_the_outside_get_windows(btype):
+    # Reference (grid) layouts only gave windows to room edges that matched a whole side of the footprint,
+    # so rooms sharing a facade with a neighbour had none (the cottage had no ground-floor windows).
+    no_window = {"stairwell", "landing", "storage", "pantry", "wc", "dressing_room", "hallway"}
+    for seed in (1, 42):
+        r = Pipeline().generate(btype, "georgian", seed)
+        for plan in r.floor_plans:
+            w, d = plan.footprint.bounds[2], plan.footprint.bounds[3]
+            for room in plan.rooms:
+                if room.room_type in no_window:
+                    continue
+                b = room.bounds
+                outside = [(b[2] - b[0]) >= 1 and (abs(b[1]) < 0.01 or abs(b[3] - d) < 0.01),
+                           (b[3] - b[1]) >= 1 and (abs(b[0]) < 0.01 or abs(b[2] - w) < 0.01)]
+                if any(outside):
+                    wins = [o for o in room.openings if o.opening_type.value == "window"]
+                    assert wins, f"{btype} seed {seed} floor {plan.floor_index}: {room.name} has no window"

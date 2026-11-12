@@ -316,8 +316,10 @@ def _place_doors_grid(plan: FloorPlan, rng: random.Random) -> None:
 def _place_windows_grid(plan: FloorPlan, rng: random.Random) -> None:
     """Place windows only on true exterior walls.
 
-    An edge is exterior if it lies on the building footprint boundary
-    AND is not shared with another room (interior partition).
+    An edge is exterior if it lies on the building footprint boundary (rooms
+    are inside the footprint, so such an edge is never shared with another
+    room). Earlier only edges matching a whole side of the footprint counted,
+    so rooms sharing a facade with a neighbour got no windows.
     """
     if not plan.footprint:
         return
@@ -325,13 +327,14 @@ def _place_windows_grid(plan: FloorPlan, rng: random.Random) -> None:
     no_window_types = {"stairwell", "landing", "storage", "pantry", "wc",
                        "dressing_room", "hallway"}
 
-    # Build set of exterior edges from the walls list
-    exterior_walls = set()
-    for wall in plan.walls:
-        if wall.wall_type == WallType.EXTERIOR:
-            s = (round(wall.start[0], 2), round(wall.start[1], 2))
-            e = (round(wall.end[0], 2), round(wall.end[1], 2))
-            exterior_walls.add((min(s, e), max(s, e)))
+    from shapely.geometry import LineString, Point
+
+    fp_boundary = plan.footprint.boundary
+
+    def on_boundary(a, b) -> bool:
+        """The edge a-b lies along the footprint boundary (a whole side or part of one)."""
+        mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        return all(fp_boundary.distance(Point(p)) < 0.01 for p in (a, b, mid))
 
     for room in plan.rooms:
         if room.room_type in no_window_types:
@@ -339,17 +342,12 @@ def _place_windows_grid(plan: FloorPlan, rng: random.Random) -> None:
 
         coords = list(room.polygon.exterior.coords)
         for i in range(len(coords) - 1):
-            s = (round(coords[i][0], 2), round(coords[i][1], 2))
-            e = (round(coords[i+1][0], 2), round(coords[i+1][1], 2))
-
-            from shapely.geometry import LineString
             edge = LineString([coords[i], coords[i+1]])
             if edge.length < 1.0:
                 continue
 
-            # Check if this edge is an exterior wall
-            key = (min(s, e), max(s, e))
-            if key not in exterior_walls:
+            # Only edges on the outside of the building get windows
+            if not on_boundary(coords[i], coords[i+1]):
                 continue
 
             num_win = max(1, int(edge.length / 2.0))
