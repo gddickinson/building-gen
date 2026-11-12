@@ -7,6 +7,7 @@ from pathlib import Path
 
 import yaml
 
+from .constraints import ROOM_CONSTRAINTS
 from .models import (
     AdjacencyReq,
     AdjacencyType,
@@ -126,10 +127,12 @@ class ProgramGenerator:
             if len(tmpl.get("floors", [])) > 1:
                 has_stair = any(r.is_stairwell for r in floor.rooms)
                 if not has_stair:
+                    # Size from the stairwell minimum in ROOM_CONSTRAINTS (4.0 m^2); it was
+                    # 3.0, so the layout made 1.0 x 3.0 m stairwells below that minimum
                     floor.rooms.append(RoomSpec(
                         name=f"stairs_{floor_idx}",
                         room_type=RoomType.STAIRWELL,
-                        min_area=3.0,
+                        min_area=ROOM_CONSTRAINTS["stairwell"].min_area,
                         max_area=5.0,
                         needs_exterior_wall=False,
                         needs_window=False,

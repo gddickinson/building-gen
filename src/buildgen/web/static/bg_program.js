@@ -56,7 +56,7 @@ export function generateProgram(tmpl, buildingType, style = 'georgian', seed = 0
     }
     if (floorDefs.length > 1 && !floor.rooms.some(r => r.is_stairwell)) {
       floor.rooms.push(makeRoomSpec({
-        name: `stairs_${idx}`, room_type: 'stairwell', min_area: 3.0, max_area: 5.0,
+        name: `stairs_${idx}`, room_type: 'stairwell', min_area: 4.0, max_area: 5.0, // ROOM_CONSTRAINTS stairwell min_area
         needs_exterior_wall: false, needs_window: false, is_stairwell: true, floor: idx,
       }));
     }
