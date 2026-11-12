@@ -1,0 +1,25 @@
+/* building-gen: brick / slate / sky accents on the shared neon theme, plus page styles. */
+:root { --accent:#ffb454; --accent2:#ff6b5b; --accent3:#5fb8ff; --glow:rgba(255,180,84,.14); }
+button, .btn, .seg button.on { color:#1a0f02; }
+.mark { border-radius:2px; border-color:var(--accent); box-shadow:0 0 12px var(--accent), inset 0 0 0 4px var(--bg), inset 0 0 0 8px var(--accent2); }
+.vw { display:grid; grid-template-columns:300px minmax(0,1fr); gap:18px; align-items:start; margin-top:12px; }
+.vw .controls { background:rgba(11,14,28,.94); border:1px solid var(--line); border-radius:6px; padding:6px 14px 14px; }
+.vw .controls h3 { margin-top:14px; }
+.vw .view canvas#g-gl { width:100%; height:min(62vh, 560px); display:block; background:#05060c; border:1px solid var(--line); border-radius:6px; touch-action:none; cursor:grab; }
+.vw .view canvas#g-gl:active { cursor:grabbing; }
+canvas.plan { width:100%; height:420px; display:block; border:1px solid var(--line); border-radius:6px; margin-top:8px; }
+.seedrow { display:flex; gap:6px; align-items:center; } .seedrow input { flex:1; min-width:0; }
+.seedrow button { margin:0; padding:7px 10px; }
+button.mini { padding:3px 8px; font-size:11px; margin:0 0 0 6px; }
+.checks label { display:inline-flex; gap:6px; align-items:center; margin:4px 12px 4px 0; color:var(--ink); }
+.seg { margin:2px 0 6px; }
+.gal img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; border-radius:4px; margin-bottom:8px; background:#05060c; }
+.gal .card { padding:10px; }
+.shot { width:100%; height:auto; border:1px solid var(--line); border-radius:6px; background:#fff; }
+td.ok { color:var(--good); } td.bad { color:var(--bad); }
+.heroview { display:grid; grid-template-columns:1.1fr 1fr; gap:22px; align-items:center; }
+.heroview img { width:100%; border:1px solid var(--line); border-radius:6px; background:#05060c; }
+@media (max-width:860px) {
+  .vw, .heroview { grid-template-columns:minmax(0,1fr); } .vw > * { min-width:0; } .seg { display:flex; }
+  .vw .view canvas#g-gl { height:52vh; } canvas.plan { height:320px; }
+}

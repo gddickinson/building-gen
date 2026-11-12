@@ -80,6 +80,26 @@ buildgen --list-types
 buildgen --list-styles
 ```
 
+## Web interface and static site
+
+The generator also runs in the browser: `src/buildgen/web/static/bg_*.js` port the four-stage pipeline (with Python's
+Mersenne Twister RNG, both layout engines, walls with openings, slabs, stairs, roofs and trimesh's .glb writer), so the
+same type, seed and style parameters give the same rooms, meshes and **byte-identical .glb files** as the Python package.
+Pages: Generator (WebGL orbit view, floor plans, style parameters, .glb download), Gallery, Types, Detailed model
+(images of the engineering builder, which stays Python-only), Verify (browser vs Python) and About.
+
+```bash
+pip install -r requirements-web.txt
+python run_web.py                      # http://127.0.0.1:8228 (adds the Python API and a "check against Python" button)
+python scripts/build_static.py         # static GitHub Pages site in site/ (published by .github/workflows/pages.yml)
+python -m pytest -q tests/test_web.py  # API, static build, fixture currency and the node test of the JS port
+```
+
+![Home](docs/img/home.png)
+![Generator](docs/img/generate.png)
+![Gallery](docs/img/gallery.png)
+![Verify](docs/img/verify.png)
+
 ## Pipeline Architecture
 
 ```
@@ -138,6 +158,7 @@ src/buildgen/
   engineering/         # Structural engineering & granular detail
   components/          # Component catalogue (80+ elements)
   viz/                 # Visualization & rendering
+  web/                 # Web interface: FastAPI app + browser port of the generator
   utils/               # Shared utilities
 ```
 

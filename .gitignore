@@ -10,3 +10,7 @@
 /src/buildgen/__pycache__
 /example_floorplans
 .DS_Store
+
+# static site build
+site/
+__pycache__/

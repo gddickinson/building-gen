@@ -1,0 +1,13 @@
+# Web interface and its tests (python run_web.py, pytest tests/test_web.py, scripts/build_static.py)
+fastapi==0.162.2
+httpx==0.28.1
+pytest==9.2.0
+uvicorn==0.54.0
+# buildgen itself (the API imports the real generator)
+shapely==2.2.0
+trimesh==5.2.0
+networkx==3.7
+numpy==2.5.4
+pyyaml==6.0.3
+matplotlib==3.11.2
+pillow==13.0.0
