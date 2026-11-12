@@ -12,6 +12,7 @@ from .models import Building3D
 from .walls import build_wall_with_openings, opening_span
 from .roofs import build_roof_mesh
 from .stairs import build_stair_mesh
+from .slabs import build_slab_with_holes, stairwell_holes
 
 
 class GeometryBuilder:
@@ -115,27 +116,15 @@ class GeometryBuilder:
         thickness: float,
         stairwell_rooms: list[RoomPolygon],
     ) -> trimesh.Trimesh:
-        """Build a floor slab with holes cut for stairwells."""
-        from shapely.geometry import box as shapely_box
+        """Build a floor slab with holes cut for stairwells (inset 0.05 m from the stairwell walls).
 
-        slab_poly = footprint
-        # Cut out stairwell openings (stairs pass through the slab)
-        for room in stairwell_rooms:
-            b = room.bounds
-            # Inset slightly so the stair opening isn't right at the edge
-            margin = 0.05
-            hole = shapely_box(
-                b[0] + margin, b[1] + margin,
-                b[2] - margin, b[3] - margin,
-            )
-            try:
-                result = slab_poly.difference(hole)
-                if not result.is_empty and result.area > 1.0:
-                    slab_poly = result
-            except Exception:
-                pass
-
-        return self._build_slab(slab_poly, y, thickness)
+        A slab with holes is assembled from boxes around them (see slabs.py): the earlier fan triangulation
+        of the outer ring covered the holes.
+        """
+        holes = stairwell_holes(footprint.bounds, [r.bounds for r in stairwell_rooms])
+        if not holes:
+            return self._build_slab(footprint, y, thickness)
+        return build_slab_with_holes(footprint.bounds, holes, y, thickness)
 
     def _build_slab(
         self, footprint: Polygon, y: float, thickness: float

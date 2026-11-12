@@ -81,3 +81,21 @@ def test_front_door_is_open():
     assert walls
     hit = [_segment_hits(g, (x, 1.0, z - 1.0), (x, 1.0, z + 0.3)) for g in walls]
     assert not any(hit), "a wall blocks the front door"
+
+
+@pytest.mark.parametrize("btype", ["cottage", "tavern", "townhouse"])
+def test_stairwell_hole_is_open_in_floor_slab(btype):
+    # The slab with stairwell holes was triangulated as a fan over its outer ring, so its top and bottom
+    # faces covered the holes: only the hole's side walls existed.
+    r = Pipeline().generate(btype, "georgian", 42)
+    checked = 0
+    for plan in r.floor_plans:
+        y = plan.floor_index * r.style.floor_height
+        slab = _node_meshes(r, f"floor_{plan.floor_index}_slab")[f"floor_{plan.floor_index}_slab"]
+        for room in plan.rooms:
+            if room.room_type != "stairwell":
+                continue
+            cx, cz = room.centroid
+            assert not _segment_hits(slab, (cx, y - 1, cz), (cx, y + 1, cz)), f"slab covers {room.name}"
+            checked += 1
+    assert checked
