@@ -140,14 +140,11 @@ class Pipeline:
         if export_3d:
             result.building.export(output_dir / f"{prefix}.glb")
 
-        try:
-            from .viz import screenshot_3d
-            screenshot_3d(
-                result.building,
-                output_dir / f"{prefix}_3d",
-                angles=["perspective"],
-            )
-        except Exception:
-            pass
+        from .viz import screenshot_3d
+        screenshot_3d(
+            result.building,
+            output_dir / f"{prefix}_3d",
+            angles=["perspective"],
+        )
 
         return result

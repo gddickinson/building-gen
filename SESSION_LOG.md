@@ -17,7 +17,10 @@
   7. Automatic stairwells used 3.0 m² min area vs 4.0 in ROOM_CONSTRAINTS. Fixed `test_rooms_not_too_small`.
   8. 3D model was a mirror image of the plans: plan y now maps to -z (GeometryBuilder._add), screenshot cameras at +z.
   Regenerated output/*_s42 (.glb, plans, sheets, 3d_views) and docs/images copies. Full pytest now 0 failures.
-- Not changed: blank `*_3d_perspective.png` (pyglet off-screen render fails silently); engineering outputs.
+- Not changed: engineering outputs.
+- Third round: `screenshot_3d` used trimesh/pyglet off-screen rendering (pyglet missing -> warning only, camera never
+  applied) and `generate_and_save` swallowed errors, so the `*_3d_perspective.png` files were blank. Replaced with a numpy
+  z-buffer software renderer (`render_scene_png`) that uses the camera; errors now propagate. Regenerated the 5 PNGs.
 - Web: FastAPI app + static site; full JS port of the generator, byte-identical .glb on the 22 reference cases and on a
   360-case stress run (all types, seeds 100-159). Port 8228.
 - Mac mini not used.

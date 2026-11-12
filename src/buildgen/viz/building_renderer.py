@@ -38,24 +38,14 @@ def screenshot_3d(
 
     for angle_name in angles:
         camera_transform = _get_camera_transform(scene, angle_name)
-
-        try:
-            # Use trimesh's offscreen rendering
-            png_data = scene.save_image(
-                resolution=resolution,
-                visible=False,
-            )
-
-            if png_data:
-                file_path = output_path.parent / (
-                    f"{output_path.stem}_{angle_name}.png"
-                )
-                with open(file_path, "wb") as f:
-                    f.write(png_data)
-                saved_paths.append(file_path)
-
-        except Exception as e:
-            print(f"  Warning: 3D render '{angle_name}' failed: {e}")
+        # Software render with matplotlib: the trimesh/pyglet off-screen
+        # renderer needed pyglet (not installed by default) and an OpenGL
+        # context, failed silently and never used camera_transform.
+        png_data = render_scene_png(scene, camera_transform, resolution)
+        file_path = output_path.parent / f"{output_path.stem}_{angle_name}.png"
+        with open(file_path, "wb") as f:
+            f.write(png_data)
+        saved_paths.append(file_path)
 
     return saved_paths
 
@@ -197,3 +187,81 @@ def _look_at(
     transform[:3, 3] = eye
 
     return transform
+
+
+def render_scene_png(
+    scene: trimesh.Scene,
+    camera_transform: np.ndarray,
+    resolution: tuple[int, int] = (1200, 900),
+    fov_deg: float = 30.0,
+) -> bytes:
+    """Render the scene's triangles to PNG bytes from a camera (camera-to-world matrix looking down -z).
+
+    A small software rasteriser (numpy z-buffer, flat-shaded face colours on white), so it needs no
+    OpenGL or pyglet. Raises ValueError if no triangle is in front of the camera.
+    """
+    import io
+
+    from PIL import Image
+
+    tris, cols = [], []
+    for node in scene.graph.nodes_geometry:
+        transform, name = scene.graph[node]
+        mesh = scene.geometry[name]
+        if len(mesh.faces) == 0:
+            continue
+        tris.append(trimesh.transform_points(mesh.vertices, transform)[mesh.faces])
+        cols.append(np.asarray(mesh.visual.face_colors, dtype=np.float64)[:, :3])
+    if not tris:
+        raise ValueError("scene has no triangles to render")
+    tris = np.concatenate(tris)
+    cols = np.concatenate(cols)
+
+    world_to_cam = np.linalg.inv(camera_transform)
+    cam = tris @ world_to_cam[:3, :3].T + world_to_cam[:3, 3]
+    depth = -cam[:, :, 2]
+    keep = (depth > 1e-3).all(axis=1)
+    if not keep.any():
+        raise ValueError("no geometry in front of the camera")
+    tris, cols, cam, depth = tris[keep], cols[keep], cam[keep], depth[keep]
+
+    # Flat shading: key light plus ambient, two-sided
+    normals = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
+    lengths = np.linalg.norm(normals, axis=1)
+    normals = normals / np.where(lengths > 0, lengths, 1.0)[:, None]
+    light = np.array([0.45, 0.8, 0.35]) / np.linalg.norm([0.45, 0.8, 0.35])
+    colours = np.clip(cols * (0.45 + 0.55 * np.abs(normals @ light))[:, None], 0, 255)
+
+    w, h = resolution
+    f = (h / 2.0) / np.tan(np.radians(fov_deg) / 2.0)
+    px = w / 2.0 + cam[:, :, 0] / depth * f
+    py = h / 2.0 - cam[:, :, 1] / depth * f
+
+    image = np.full((h, w, 3), 255.0)
+    zbuf = np.full((h, w), np.inf)
+    for t in range(len(tris)):
+        x, y, z = px[t], py[t], depth[t]
+        x0, x1 = max(int(np.floor(x.min())), 0), min(int(np.ceil(x.max())), w - 1)
+        y0, y1 = max(int(np.floor(y.min())), 0), min(int(np.ceil(y.max())), h - 1)
+        if x0 > x1 or y0 > y1:
+            continue
+        area = (x[1] - x[0]) * (y[2] - y[0]) - (x[2] - x[0]) * (y[1] - y[0])
+        if abs(area) < 1e-12:
+            continue
+        gx, gy = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
+        w0 = ((x[1] - gx) * (y[2] - gy) - (x[2] - gx) * (y[1] - gy)) / area
+        w1 = ((x[2] - gx) * (y[0] - gy) - (x[0] - gx) * (y[2] - gy)) / area
+        w2 = 1.0 - w0 - w1
+        inside = (w0 >= 0) & (w1 >= 0) & (w2 >= 0)
+        if not inside.any():
+            continue
+        # perspective-correct depth
+        zz = 1.0 / (w0 / z[0] + w1 / z[1] + w2 / z[2])
+        sub = zbuf[y0:y1 + 1, x0:x1 + 1]
+        win = inside & (zz < sub)
+        sub[win] = zz[win]
+        image[y0:y1 + 1, x0:x1 + 1][win] = colours[t]
+
+    buf = io.BytesIO()
+    Image.fromarray(image.astype(np.uint8)).save(buf, format="PNG")
+    return buf.getvalue()

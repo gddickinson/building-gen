@@ -190,3 +190,19 @@ def test_3d_model_is_not_a_mirror_image_of_the_plans():
     x = win.position[0]
     walls = list(_node_meshes(r, "floor_0_wall_").values())
     assert not any(_segment_hits(g, (x, 1.6, -depth + 1.0), (x, 1.6, -depth - 1.0)) for g in walls)
+
+
+def test_3d_perspective_render_is_not_blank(tmp_path):
+    # screenshot_3d needed pyglet and OpenGL; without them it printed a warning, and generate_and_save
+    # swallowed errors, leaving the committed *_3d_perspective.png files blank.
+    from PIL import Image
+
+    from buildgen.viz import screenshot_3d
+    r = Pipeline().generate("cottage", "georgian", 42)
+    paths = screenshot_3d(r.building, tmp_path / "c_3d", resolution=(400, 300), angles=["perspective"])
+    assert len(paths) == 1
+    img = np.asarray(Image.open(paths[0]).convert("RGB"))
+    assert img.shape[:2] == (300, 400)
+    drawn = (img < 245).any(axis=2).mean()
+    assert drawn > 0.1, f"only {drawn:.1%} of the image is drawn"
+    assert len(np.unique(img.reshape(-1, 3), axis=0)) >= 5  # walls, roof, slabs in several shades
