@@ -10,10 +10,14 @@
   3. Slabs with stairwell holes were fan-triangulated over the outer ring, covering the holes; now built from boxes.
   4. Roofs: ridge always ran front to back (pyramid hip / wrong gable on the wide cottage), and all roof faces pointed down.
   5. Grid layouts gave windows only to room edges spanning a whole footprint side (cottage: no ground-floor windows).
-- Pre-existing failures (before any change): `TestRoomSizes::test_rooms_not_too_small` (stairwell 3.0 m² < 3.2) and
-  `test_room_aspect_ratios` (seed 2 entrance hall 1.1 × 7.9 m) on the BSP townhouse. Not changed.
-- Needs George's decision (not changed): BSP `_carve_small_room` keeps the host room at its full bounding box, so it
-  overlaps the carved room; the 3D model is mirrored relative to the plans (plan y -> +z with y up).
+- Second round (George: "fix any other problems you come across"):
+  6. Rooms overlapped: carved closets inside their host (host now L-shaped, `RoomPolygon.main_bounds` for fittings),
+     hall/landing over the stairwell (now stop at its foot), grid cells shared by two rooms (larger room trimmed).
+     Fixed `test_room_aspect_ratios`.
+  7. Automatic stairwells used 3.0 m² min area vs 4.0 in ROOM_CONSTRAINTS. Fixed `test_rooms_not_too_small`.
+  8. 3D model was a mirror image of the plans: plan y now maps to -z (GeometryBuilder._add), screenshot cameras at +z.
+  Regenerated output/*_s42 (.glb, plans, sheets, 3d_views) and docs/images copies. Full pytest now 0 failures.
+- Not changed: blank `*_3d_perspective.png` (pyglet off-screen render fails silently); engineering outputs.
 - Web: FastAPI app + static site; full JS port of the generator, byte-identical .glb on the 22 reference cases and on a
   360-case stress run (all types, seeds 100-159). Port 8228.
 - Mac mini not used.
